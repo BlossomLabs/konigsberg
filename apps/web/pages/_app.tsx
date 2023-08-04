@@ -6,20 +6,23 @@ import * as React from "react";
 import { WagmiConfig } from "wagmi";
 
 import { chains, client } from "../wagmi";
+import { ChakraProvider } from "@chakra-ui/react";
 
 function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   return (
-    <WagmiConfig client={client}>
-      <RainbowKitProvider chains={chains}>
-        <NextHead>
-          <title>My App</title>
-        </NextHead>
+    <ChakraProvider>
+      <WagmiConfig client={client}>
+        <RainbowKitProvider chains={chains}>
+          <NextHead>
+            <title>My App</title>
+          </NextHead>
 
-        {mounted && <Component {...pageProps} />}
-      </RainbowKitProvider>
-    </WagmiConfig>
+          {mounted && <Component {...pageProps} />}
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </ChakraProvider>
   );
 }
 
