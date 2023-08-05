@@ -5,7 +5,7 @@ import NextHead from "next/head";
 import * as React from "react";
 import { WagmiConfig } from "wagmi";
 
-import { chains, client } from "../wagmi";
+import { chains, client } from "../services/wagmi";
 import { ChakraProvider } from "@chakra-ui/react";
 
 function App({ Component, pageProps }: AppProps) {
