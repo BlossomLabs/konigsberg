@@ -1,8 +1,8 @@
 'use client'
 
 import { Flex, Box, Text } from "@chakra-ui/react"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { useRouter } from "next/router"
+
 
 export default function Header() {
 
@@ -15,9 +15,6 @@ export default function Header() {
                     <Text fontSize="xl" as="b" mr={4} cursor="pointer" onClick={() => router.push("/")}>
                         PREGEL
                     </Text>
-                </Flex>
-                <Flex align="center">
-                    <ConnectButton showBalance={false} chainStatus="none"/>
                 </Flex>
             </Flex>
         </Box>
