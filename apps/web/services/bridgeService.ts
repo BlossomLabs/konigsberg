@@ -2,66 +2,74 @@
  * Data Model Interfaces
  */
 import { BridgeProvider } from "../domain/bridges/BridgeProvider";
+import { LiFiBridgeProvider } from "../domain/bridges/impl/LiFiBridgeProvider";
 import { ChainToken } from "../domain/tokens/ChainToken";
 
 /**
  * In-Memory Store
  */
 
-let bridgeProviders = [
-    {
-        id: "li.fi",
-        name: "lifi",
-    },
-];
+// let bridgeProviders = [
+//     {
+//         id: "li.fi",
+//         name: "lifi",
+//     },
+// ];
 
 /**
  * Service Methods
  */
 
-const getAllBridgeProviders = async (): Promise<BridgeProvider[]> => {
-    return Object.values(bridgeProviders).map((o) => o as any as BridgeProvider);
-};
+export class BridgeService {
+    // hardcoded values accessor
+    protected getAllBridgeProviders =  (): BridgeProvider[] => {
+        return [new LiFiBridgeProvider]
+    };
 
-export const getAllBridgeableTokensFromChain = async (originChainId: number): Promise<ChainToken[]> => {
-    const providers = await getAllBridgeProviders();
-    const allTokensLists  = await Promise.all(
-        providers.map(async (p) =>
-            await getAllBridgeableTokensFromChainAndBridgeProvider(originChainId, p.getBridgeProviderInformation().id
-        )
-    ));
+    // service methods 
 
-    var allTokens = allTokensLists.flat().filter((e, index, self) => self.indexOf(e) == index)
-    return allTokens;
-};
+    public getAllBridgeableTokensFromChain = async (originChainId: number): Promise<ChainToken[]> => {
+        const providers = await this.getAllBridgeProviders();
+        const allTokensLists  = await Promise.all(
+            providers.map(async (p) =>
+                await this.getAllBridgeableTokensFromChainAndBridgeProvider(originChainId, p.getBridgeProviderInformation().id
+            )
+        ));
 
-const getAllBridgeableTokensFromChainAndBridgeProvider = async (
-    originChainId: number,
-    bridgeProviderId: string
-): Promise<ChainToken[]> => {
-    // TODO
-    return [];
-};
+        var allTokens = allTokensLists.flat().filter((e, index, self) => self.indexOf(e) == index)
+        return allTokens;
+    };
 
-// returns a list of chainIds (for every chain that you can bridge tokens to)
-export const getCompatibleDestinationChains = async (originChainId : number, tokenId: number) : Promise<number[]> => {
-    const providers = await getAllBridgeProviders();
-    const allChainsLists  = await Promise.all(
-        providers.map(async (p) =>
-            await getCompatibleDestinationChainsForBridgeService(originChainId, tokenId)
-        )
-    );
+    protected getAllBridgeableTokensFromChainAndBridgeProvider = async (
+        originChainId: number,
+        bridgeProviderId: string
+    ): Promise<ChainToken[]> => {
+        const provider = this.getAllBridgeProviders().find(p => p.getBridgeProviderInformation().id == bridgeProviderId);
+        if(!provider)
+            return [];
+        return provider.getAllBridgeableTokensFromChain(originChainId);
+    };
 
-    var allChains = allChainsLists.flat().filter((e, index, self) => self.indexOf(e) == index)
-    return allChains;
-}
+    // returns a list of chainIds (for every chain that you can bridge tokens to)
+    public getCompatibleDestinationChains = async (originChainId : number, tokenId: number) : Promise<number[]> => {
+        const providers = await this.getAllBridgeProviders();
+        const allChainsLists  = await Promise.all(
+            providers.map(async (p) =>
+                await this.getCompatibleDestinationChainsForBridgeService(originChainId, tokenId)
+            )
+        );
 
-const getCompatibleDestinationChainsForBridgeService = async (originChainId : number, tokenId: number) : Promise<number[]> => {
-    // TODO
-    return [];
-}
+        var allChains = allChainsLists.flat().filter((e, index, self) => self.indexOf(e) == index)
+        return allChains;
+    }
 
-export const getBestBridgeProviderForBridging = async (originChainId: number, destinationChainId: number, tokenId: number) : Promise<BridgeProvider|undefined> => {
-    // TODO
-    return undefined;
+    protected getCompatibleDestinationChainsForBridgeService = async (originChainId : number, tokenId: number) : Promise<number[]> => {
+        // TODO
+        return [];
+    }
+
+    public getBestBridgeProviderForBridging = async (originChainId: number, destinationChainId: number, tokenId: number) : Promise<BridgeProvider|undefined> => {
+        // TODO
+        return undefined;
+    }
 }
