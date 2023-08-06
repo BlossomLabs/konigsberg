@@ -70,7 +70,7 @@ export default function TargetAccounts() {
     return (
         <div>
             <Text fontSize="2xl" as="b">Send {symbol} from {chain} to</Text>
-            <VStack>
+            <VStack mt="5">
                 <TableContainer>
                     <Table variant={"simple"}>
                         <Thead>
