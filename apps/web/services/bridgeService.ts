@@ -2,31 +2,26 @@
  * Data Model Interfaces
  */
 import { BridgeProvider } from "../domain/bridges/BridgeProvider";
-import { LiFiBridgeProvider } from "../domain/bridges/impl/LiFiBridgeProvider";
 import { ChainToken } from "../domain/tokens/ChainToken";
-
-/**
- * In-Memory Store
- */
-
-// let bridgeProviders = [
-//     {
-//         id: "li.fi",
-//         name: "lifi",
-//     },
-// ];
 
 /**
  * Service Methods
  */
 
 export class BridgeService {
+
+
     // hardcoded values accessor
-    protected getAllBridgeProviders =  (): BridgeProvider[] => {
-        return [new LiFiBridgeProvider]
-    };
+    private bridgeProviders : BridgeProvider[];
+    constructor(bridgeProviders: BridgeProvider[]){
+        this.bridgeProviders = bridgeProviders;
+    }
 
     // service methods 
+
+    private getAllBridgeProviders =  (): BridgeProvider[] => {
+        return this.bridgeProviders;
+    };
 
     public getAllBridgeableTokensFromChain = async (originChainId: number): Promise<ChainToken[]> => {
         const providers = await this.getAllBridgeProviders();

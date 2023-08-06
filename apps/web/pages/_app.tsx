@@ -8,6 +8,7 @@ import { WagmiConfig } from "wagmi";
 
 import { chains, client } from "../services/wagmi";
 import { ChakraProvider } from "@chakra-ui/react";
+import { StoreContext, store } from "../services/stores/store";
 
 function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = React.useState(false);
@@ -15,13 +16,16 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
       <WagmiConfig client={client}>
-        <RainbowKitProvider chains={chains}>
-          <NextHead>
-            <title>My App</title>
-          </NextHead>
+        <StoreContext.Provider value={store}>
+          <RainbowKitProvider chains={chains}>
+              <NextHead>
+                <title>My App</title>
+              </NextHead>
 
-          {mounted && <Component {...pageProps} />}
-        </RainbowKitProvider>
+              {mounted && <Component {...pageProps} />}
+            
+          </RainbowKitProvider>
+        </StoreContext.Provider>
       </WagmiConfig>
     </ChakraProvider>
   );
