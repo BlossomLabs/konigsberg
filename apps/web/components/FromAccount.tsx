@@ -1,9 +1,14 @@
 'use client'
 
-import { Text, VStack } from "@chakra-ui/react"
+import { Text, VStack, Box } from "@chakra-ui/react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { useState } from "react"
+import TokenSelect from "./TokenSelect"
+import { useAccount } from "wagmi"
 
 export default function FromAccount() {
+
+    const { address } = useAccount()
 
     return (
         <div>
@@ -12,6 +17,9 @@ export default function FromAccount() {
                 <div className="wallet-button-wrapper">
                     <ConnectButton showBalance={false} />
                 </div>
+                <Box mt="3">
+                    {address ? <TokenSelect /> : null}
+                </Box>
             </VStack>
         </div>
     )
