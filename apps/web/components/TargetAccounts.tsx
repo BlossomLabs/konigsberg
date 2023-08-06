@@ -21,13 +21,14 @@ import {
 
 import { AddIcon, CloseIcon } from '@chakra-ui/icons'
 import { useState } from 'react';
+import { useNetwork } from 'wagmi';
 
 export default function TargetAccounts() {
 
     const symbol: string = "ETH";
-    const chain: string = "Ethereum";
+    const { chain } = useNetwork();
 
-    type Chain = {
+    type TargetChain = {
         name: string,
         id: number
     }
@@ -51,7 +52,7 @@ export default function TargetAccounts() {
         }
     ]);
 
-    const chains: Chain[] = [
+    const targetChains: TargetChain[] = [
         { name: "Optimism", id: 10 },
         { name: "Ethereum", id: 1 }
     ]
@@ -69,7 +70,8 @@ export default function TargetAccounts() {
 
     return (
         <div>
-            <Text fontSize="2xl" as="b">Send {symbol} from {chain} to</Text>
+            {!chain && <Text fontSize="2xl" as="b">Send to</Text>}
+            {chain && <Text fontSize="2xl" as="b">Send {symbol} from {chain?.name} to</Text>}
             <VStack mt="5">
                 <TableContainer>
                     <Table variant={"simple"}>
@@ -99,7 +101,7 @@ export default function TargetAccounts() {
                                                 setAccounts(updatedAccounts);
                                             }
                                         }>
-                                            {chains.map((chain, index) => (
+                                            {targetChains.map((chain, index) => (
                                                 <option key={index} value={chain.id}>{chain.name}</option>
                                             ))}
                                         </Select>
