@@ -1,7 +1,8 @@
 'use client'
 
-import { Flex, Box, Text } from "@chakra-ui/react"
+import { Flex, Box, Text, Button } from "@chakra-ui/react"
 import { useRouter } from "next/router"
+import { store } from "../services/stores/store"
 
 
 export default function Header() {

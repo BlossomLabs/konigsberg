@@ -21,12 +21,19 @@ import { ChainToken } from "../domain/tokens/ChainToken";
  */
 
 export class BridgeService {
+
+
     // hardcoded values accessor
-    protected getAllBridgeProviders =  (): BridgeProvider[] => {
-        return [new LiFiBridgeProvider]
-    };
+    private bridgeProviders : BridgeProvider[];
+    constructor(bridgeProviders: BridgeProvider[]){
+        this.bridgeProviders = bridgeProviders;
+    }
 
     // service methods 
+
+    private getAllBridgeProviders =  (): BridgeProvider[] => {
+        return this.bridgeProviders;
+    };
 
     public getAllBridgeableTokensFromChain = async (originChainId: number): Promise<ChainToken[]> => {
         const providers = await this.getAllBridgeProviders();

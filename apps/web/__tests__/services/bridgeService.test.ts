@@ -1,34 +1,10 @@
 
 import '@testing-library/jest-dom';
 import { BridgeService } from '../../services/bridgeService';
-import { BridgeOperation, BridgeOperationInformation, BridgeOperationStatusSuccess, BridgeProvider, BridgeProviderInformation } from '../../domain/bridges/BridgeProvider';
-import { ChainToken } from '../../domain/tokens/ChainToken';
+import { MockBridgeProvider } from '../../domain/bridges/impl/MockBridgeProvider';
 
 
-class MockBridgeProvider implements BridgeProvider {
-    async bridgeTokens(sourceWalletId: number, sourceChainId: number, sourceTokenId: number, destinationWalletId: number, destinationChainId: number, quantity: number): Promise<BridgeOperation> {
-        return new BridgeOperation(127, new BridgeOperationStatusSuccess());
-    }
-    async getBridgeProviderQuoteInformation(sourceWalletId: number, sourceChainId: number, sourceTokenId: number, destinationChainId: number, quantity: number): Promise<BridgeOperationInformation> {
-        return new BridgeOperationInformation(10,5);
-    }
-    getBridgeProviderInformation(): BridgeProviderInformation {
-        return new BridgeProviderInformation("test_bridge_id", "TestBridgeId");
-    }
-    async getAllBridgeableTokensFromChain(chainId: number): Promise<ChainToken[]> {
-        return [new ChainToken(10, 0x7F5c764cBc14f9669B88837ca1490cCa17c31607, "USDC", 6)]
-    }
-    
-}
-
-class MockBridgeService extends BridgeService {
-    // hardcoded values accessor
-    protected getAllBridgeProviders = (): BridgeProvider[] => {
-        return [new MockBridgeProvider()]
-    };
-}
-
-const mockBridgeService : MockBridgeService = new MockBridgeService();
+const mockBridgeService : BridgeService = new BridgeService([new MockBridgeProvider()]);
 
 describe('Bridge Service', () => {
     it('gets all bridgeable tokens from chain', async () => {
