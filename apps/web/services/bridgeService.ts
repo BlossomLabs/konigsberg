@@ -2,19 +2,7 @@
  * Data Model Interfaces
  */
 import { BridgeProvider } from "../domain/bridges/BridgeProvider";
-import { LiFiBridgeProvider } from "../domain/bridges/impl/LiFiBridgeProvider";
 import { ChainToken } from "../domain/tokens/ChainToken";
-
-/**
- * In-Memory Store
- */
-
-// let bridgeProviders = [
-//     {
-//         id: "li.fi",
-//         name: "lifi",
-//     },
-// ];
 
 /**
  * Service Methods
