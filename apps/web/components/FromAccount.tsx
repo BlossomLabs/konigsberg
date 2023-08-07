@@ -5,6 +5,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { useState } from "react"
 import TokenSelect from "./TokenSelect"
 import { useAccount } from "wagmi"
+import TransactionSummary from "./TransactionSummary"
 
 export default function FromAccount() {
 
@@ -19,6 +20,7 @@ export default function FromAccount() {
                 </div>
                 <Box mt="3">
                     {address ? <TokenSelect /> : null}
+                    {address ? <TransactionSummary /> : null}
                 </Box>
             </VStack>
         </div>
