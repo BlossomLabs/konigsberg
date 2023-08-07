@@ -3,6 +3,7 @@
 import { Flex, Box, Text, Button } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { store } from "../services/stores/store"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 
 
 export default function Header() {
@@ -17,6 +18,7 @@ export default function Header() {
                         PREGEL
                     </Text>
                 </Flex>
+                <ConnectButton showBalance={false} chainStatus="none"/>
             </Flex>
         </Box>
     )
