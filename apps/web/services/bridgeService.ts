@@ -46,11 +46,11 @@ export class BridgeService {
     };
 
     // returns a list of chainIds (for every chain that you can bridge tokens to)
-    public getCompatibleDestinationChains = async (originChainId : number, tokenId: number) : Promise<number[]> => {
+    public getCompatibleDestinationChains = async (originChainId : number, tokenAddress: string) : Promise<number[]> => {
         const providers = await this.getAllBridgeProviders();
         const allChainsLists  = await Promise.all(
             providers.map(async (p) =>
-                await this.getCompatibleDestinationChainsForBridgeService(originChainId, tokenId)
+                await this.getCompatibleDestinationChainsForBridgeService(originChainId, tokenAddress)
             )
         );
 
@@ -58,12 +58,12 @@ export class BridgeService {
         return allChains;
     }
 
-    protected getCompatibleDestinationChainsForBridgeService = async (originChainId : number, tokenId: number) : Promise<number[]> => {
+    protected getCompatibleDestinationChainsForBridgeService = async (originChainId : number, tokenAddress: string) : Promise<number[]> => {
         // TODO
         return [];
     }
 
-    public getBestBridgeProviderForBridging = async (originChainId: number, destinationChainId: number, tokenId: number) : Promise<BridgeProvider|undefined> => {
+    public getBestBridgeProviderForBridging = async (originChainId: number, destinationChainId: number, tokenAddress: string) : Promise<BridgeProvider|undefined> => {
         // TODO
         return undefined;
     }

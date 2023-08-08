@@ -1,39 +1,37 @@
 import { ChainToken } from "../tokens/ChainToken";
 
-export class BridgeOperationStatusSuccess {
-
-}
+export class BridgeOperationStatusSuccess {}
 export class BridgeOperationStatusError {
-    public readonly errorCode : string;
-    public readonly errorMsg : string;
-    constructor(errorCode: string, errorMsg : string){
+    public readonly errorCode: string;
+    public readonly errorMsg: string;
+    constructor(errorCode: string, errorMsg: string) {
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
     }
 }
 
 export class BridgeOperation {
-    status : BridgeOperationStatusError|BridgeOperationStatusSuccess;
-    transactionId: number;
-    constructor(transactionId: number, status: BridgeOperationStatusError|BridgeOperationStatusSuccess) {
+    status: BridgeOperationStatusError | BridgeOperationStatusSuccess;
+    transactionId: string;
+    constructor(transactionId: string, status: BridgeOperationStatusError | BridgeOperationStatusSuccess) {
         this.status = status;
         this.transactionId = transactionId;
     }
 }
 
 export class BridgeOperationInformation {
-    public readonly estimatedOperationCost : number;
-    public readonly estimatedFee : number;
-    constructor(estimatedOperationCost: number, estimatedFee: number){
+    public readonly estimatedOperationCost: BigInt;
+    public readonly estimatedFee: BigInt;
+    constructor(estimatedOperationCost: BigInt, estimatedFee: BigInt) {
         this.estimatedFee = estimatedFee;
         this.estimatedOperationCost = estimatedOperationCost;
     }
 }
 
 export class BridgeProviderInformation {
-    public readonly name: string = 'Unknown Bridge Provider';
-    public readonly id : string = 'UnknownId';
-    constructor(id: string, name: string){
+    public readonly name: string = "Unknown Bridge Provider";
+    public readonly id: string = "UnknownId";
+    constructor(id: string, name: string) {
         this.id = id;
         this.name = name;
     }
@@ -41,10 +39,23 @@ export class BridgeProviderInformation {
 
 export interface BridgeProvider {
     // exec
-    bridgeTokens(sourceWalletId: number, sourceChainId: number, sourceTokenId: number, destinationWalletId :number, destinationChainId:number, quantity:number) : Promise<BridgeOperation>;
-    
+    bridgeTokens(
+        sourceWalletAddress: string,
+        sourceChainId: number,
+        sourceTokenAddress: string,
+        destinationWalletAddress: string,
+        destinationChainId: number,
+        quantity: BigInt
+    ): Promise<BridgeOperation>;
+
     // info
-    getBridgeProviderQuoteInformation(sourceWalletId: number, sourceChainId: number, sourceTokenId: number, destinationChainId:number, quantity:number) : Promise<BridgeOperationInformation>;
-    getBridgeProviderInformation() : BridgeProviderInformation;
-    getAllBridgeableTokensFromChain(chainId: number) : Promise<ChainToken[]>;
+    getBridgeProviderQuoteInformation(
+        sourceWalletAddress: string,
+        sourceChainId: number,
+        sourceTokenAddress: string,
+        destinationChainId: number,
+        quantity: BigInt
+    ): Promise<BridgeOperationInformation>;
+    getBridgeProviderInformation(): BridgeProviderInformation;
+    getAllBridgeableTokensFromChain(chainId: number): Promise<ChainToken[]>;
 }
