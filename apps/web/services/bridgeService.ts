@@ -23,11 +23,11 @@ export class BridgeService {
         return this.bridgeProviders;
     };
 
-    public getAllBridgeableTokensFromChain = async (originChainId: number): Promise<ChainToken[]> => {
+    public getAllBridgeableTokensToChain = async (destinationChainId: number, originChainId?: number): Promise<ChainToken[]> => {
         const providers = await this.getAllBridgeProviders();
         const allTokensLists  = await Promise.all(
             providers.map(async (p) =>
-                await this.getAllBridgeableTokensFromChainAndBridgeProvider(originChainId, p.getBridgeProviderInformation().id
+                await this.getAllBridgeableTokensToChainAndBridgeProvider(destinationChainId, originChainId, p.getBridgeProviderInformation().id
             )
         ));
 
@@ -35,14 +35,15 @@ export class BridgeService {
         return allTokens;
     };
 
-    protected getAllBridgeableTokensFromChainAndBridgeProvider = async (
-        originChainId: number,
+    protected getAllBridgeableTokensToChainAndBridgeProvider = async (
+        destinationChainId: number,
+        originChainId: number | undefined,
         bridgeProviderId: string
     ): Promise<ChainToken[]> => {
         const provider = this.getAllBridgeProviders().find(p => p.getBridgeProviderInformation().id == bridgeProviderId);
         if(!provider)
             return [];
-        return provider.getAllBridgeableTokensToChain(originChainId);
+        return provider.getAllBridgeableTokensToChain(destinationChainId, originChainId);
     };
 
     // returns a list of chainIds (for every chain that you can bridge tokens to)
