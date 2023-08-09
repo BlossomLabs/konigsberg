@@ -1,4 +1,4 @@
-import { ChainToken } from "../../tokens/ChainToken";
+import { ChainToken } from "../../model/ChainToken";
 import { BridgeOperation, BridgeOperationInformation, BridgeOperationStatusError, BridgeProvider, BridgeProviderInformation } from "../BridgeProvider";
 
 export class LiFiBridgeProvider implements BridgeProvider {
@@ -15,7 +15,7 @@ export class LiFiBridgeProvider implements BridgeProvider {
         return new BridgeProviderInformation("lifi", "lifi");
     }
 
-    async getAllBridgeableTokensFromChain(chainId: number): Promise<ChainToken[]> {
+    async getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]> {
         // TODO: implement for lifi
         return [];
     }
