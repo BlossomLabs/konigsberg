@@ -22,11 +22,15 @@ import {
 import { AddIcon, CloseIcon } from '@chakra-ui/icons'
 import { useState } from 'react';
 import { useNetwork } from 'wagmi';
+import { store } from '../services/stores/store';
 
 export default function TargetAccounts() {
 
-    const symbol: string = "ETH";
+    const [symbol, setSymbol] = useState<string | undefined>(store.UserOptions.selectedToken.symbol)
+
     const { chain } = useNetwork();
+
+    console.log(symbol)
 
     type TargetChain = {
         name: string,
