@@ -16,12 +16,15 @@ import {
     useDisclosure,
     ModalHeader
 } from "@chakra-ui/react"
+import { store } from "../services/stores/store"
 
 export default function TokenSelect() {
 
     const [showTokensWithoutBalance, setShowTokensWithoutBalances] = useState<boolean>(false)
 
-    const [selectedToken, setSelectedToken] = useState<Token>()
+    const [selectedToken, setSelectedToken] = useState<SelectedToken>()
+
+    store.UserOptions.selectedToken.symbol = selectedToken?.symbol;
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -30,6 +33,11 @@ export default function TokenSelect() {
         name: string,
         balance: number,
         imgUrl: string
+    }
+
+    type SelectedToken = {
+        symbol: string,
+        name: string,
     }
 
     const tokens: Token[] = [
@@ -58,7 +66,7 @@ export default function TokenSelect() {
             imgUrl: "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707"
         }
     ]
-    
+
     return (
         <div>
             <Button onClick={onOpen}>
