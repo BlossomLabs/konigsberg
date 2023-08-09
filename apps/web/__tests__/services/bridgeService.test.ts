@@ -10,9 +10,9 @@ describe('Bridge Service', () => {
     it('gets all bridgeable tokens from chain', async () => {
         const testChainId = 10; // Optimism
         const result = await mockBridgeService.getAllBridgeableTokensToChain(testChainId, undefined);
-        expect(result.length).toBe(1);
+        expect(result.length).toBe(4);
         expect(result[0].chainId).toBe(10);
-        expect(result[0].contractAddress).toBe("0x7F5c764cBc14f9669B88837ca1490cCa17c31607");
+        expect(result[0].contractAddress).toBe("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48");
         expect(result[0].nDecimals).toBe(6);
         expect(result[0].symbol).toBe("USDC");
     })
