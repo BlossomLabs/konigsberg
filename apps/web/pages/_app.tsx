@@ -19,7 +19,7 @@ function App({ Component, pageProps }: AppProps) {
         <StoreContext.Provider value={store}>
           <RainbowKitProvider chains={chains}>
               <NextHead>
-                <title>Pregel</title>
+                <title>Pregel Bridge</title>
               </NextHead>
 
               {mounted && <Component {...pageProps} />}

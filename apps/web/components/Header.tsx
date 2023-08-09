@@ -15,7 +15,7 @@ export default function Header() {
             <Flex justify="space-between">
                 <Flex align="center">
                     <Text fontSize="xl" as="b" mr={4} cursor="pointer" onClick={() => router.push("/")}>
-                        PREGEL
+                        PREGEL BRIDGE
                     </Text>
                 </Flex>
                 <ConnectButton showBalance={false} chainStatus="none"/>
