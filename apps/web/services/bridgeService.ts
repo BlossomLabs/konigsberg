@@ -2,7 +2,7 @@
  * Data Model Interfaces
  */
 import { BridgeProvider } from "../domain/bridges/BridgeProvider";
-import { ChainToken } from "../domain/tokens/ChainToken";
+import { ChainToken } from "../domain/model/ChainToken";
 
 /**
  * Service Methods
@@ -42,7 +42,7 @@ export class BridgeService {
         const provider = this.getAllBridgeProviders().find(p => p.getBridgeProviderInformation().id == bridgeProviderId);
         if(!provider)
             return [];
-        return provider.getAllBridgeableTokensFromChain(originChainId);
+        return provider.getAllBridgeableTokensToChain(originChainId);
     };
 
     // returns a list of chainIds (for every chain that you can bridge tokens to)
