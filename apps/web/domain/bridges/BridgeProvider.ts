@@ -1,4 +1,4 @@
-import { ChainToken } from "../tokens/ChainToken";
+import { ChainToken } from "../model/ChainToken";
 
 export class BridgeOperationStatusSuccess {}
 export class BridgeOperationStatusError {
@@ -57,5 +57,7 @@ export interface BridgeProvider {
         quantity: BigInt
     ): Promise<BridgeOperationInformation>;
     getBridgeProviderInformation(): BridgeProviderInformation;
-    getAllBridgeableTokensFromChain(chainId: number): Promise<ChainToken[]>;
+    getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]>;
+    getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string): Promise<number[]>;
+    
 }

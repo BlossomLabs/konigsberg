@@ -4,6 +4,7 @@ import { BridgeService } from "../bridgeService";
 import { LiFiBridgeProvider } from "../../domain/bridges/impl/LiFiBridgeProvider";
  
 import UserOptions from "./UserOptions";
+import { MockBridgeProvider } from "../../domain/bridges/impl/MockBridgeProvider";
 
 interface Store {
     // usual stores
@@ -14,7 +15,7 @@ interface Store {
 } 
  
 export const store: Store = { 
-    bridgeService: new BridgeService([new LiFiBridgeProvider()]), 
+    bridgeService: new BridgeService([new MockBridgeProvider()]), 
     UserOptions: new UserOptions(),
 } 
  

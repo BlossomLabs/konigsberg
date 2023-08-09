@@ -9,7 +9,7 @@ const mockBridgeService : BridgeService = new BridgeService([new MockBridgeProvi
 describe('Bridge Service', () => {
     it('gets all bridgeable tokens from chain', async () => {
         const testChainId = 10; // Optimism
-        const result = await mockBridgeService.getAllBridgeableTokensFromChain(testChainId);
+        const result = await mockBridgeService.getAllBridgeableTokensToChain(testChainId, undefined);
         expect(result.length).toBe(1);
         expect(result[0].chainId).toBe(10);
         expect(result[0].contractAddress).toBe("0x7F5c764cBc14f9669B88837ca1490cCa17c31607");
