@@ -1,7 +1,7 @@
 
 import '@testing-library/jest-dom';
 import { BridgeService } from '../../services/bridgeService';
-import { MockBridgeProvider } from '../../domain/bridges/impl/MockBridgeProvider';
+import { MockBridgeProvider } from '../../infrastructure/bridges/MockBridgeProvider';
 
 
 const mockBridgeService : BridgeService = new BridgeService([new MockBridgeProvider()]);

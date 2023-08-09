@@ -1,7 +1,7 @@
-import { ChainToken } from "../../model/ChainToken";
-import { BridgeOperation, BridgeOperationInformation, BridgeOperationStatusError, BridgeProvider, BridgeProviderInformation } from "../BridgeProvider";
+import { ChainToken } from "../../../domain/model/ChainToken";
+import { BridgeOperation, BridgeOperationInformation, BridgeOperationStatusError, BridgeProvider, BridgeProviderInformation } from "../../../domain/bridges/BridgeProvider";
 
-export class LiFiBridgeProvider implements BridgeProvider {
+export class CelerBridgeProvider implements BridgeProvider {
     getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string | undefined): Promise<number[]> {
         throw new Error("Method not implemented.");
     }

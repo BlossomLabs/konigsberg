@@ -1,5 +1,5 @@
-import { ChainToken } from "../../model/ChainToken";
-import { BridgeOperation, BridgeOperationInformation, BridgeOperationStatusError, BridgeOperationStatusSuccess, BridgeProvider, BridgeProviderInformation } from "../BridgeProvider";
+import { ChainToken } from "../../domain/model/ChainToken";
+import { BridgeOperation, BridgeOperationInformation, BridgeOperationStatusError, BridgeOperationStatusSuccess, BridgeProvider, BridgeProviderInformation } from "../../domain/bridges/BridgeProvider";
 
 export class MockBridgeProvider implements BridgeProvider {
     getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string | undefined): Promise<number[]> {
