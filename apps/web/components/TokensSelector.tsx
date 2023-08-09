@@ -21,6 +21,9 @@ import { useState } from "react"
 export default function TokensSelector() {
 
     const [sending, setSending] = useState<boolean>(false)
+    const [network, setNetwork] = useState<string | undefined>(undefined)
+    const [transferPreferences, setTransferPreferences] = useState<string>("Best return")
+    const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
 
     type Tokens = {
         symbol: string,
@@ -69,13 +72,16 @@ export default function TokensSelector() {
             imgUrl: "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png?1598003707",
             selected: false,
             amountToBeSent: undefined
-        }
+        },
+
     ])
 
     const sendTokens = async () => {
         setSending(true)
         // Implement sending logic here
     }
+
+
 
     return (
         <div>
@@ -122,23 +128,24 @@ export default function TokensSelector() {
                             </Tbody>
                         </Table>
                     </TableContainer>
-                    <HStack>
-                        <Select>
-                            <option>Ethereum..</option>
-                            <option>Optimism</option>
-                            {/* select networks, if not selected, send disabled*/}
-                        </Select>
-                        <Select>
-                            <option>Fastest</option>
-                            <option>Best return</option>
-                            {/* select preference */}
-                        </Select>
-                    </HStack>
-
+                    <VStack>
+                        <Box>
+                            <Text as="b" fontSize="md">Network</Text>
+                            <Select onChange={(e) => setNetwork(e.target.value)}>
+                                <option>Ethereum</option>
+                                <option>Optimism</option>
+                            </Select>
+                        </Box>
+                        <Box>
+                            <Text as="b" fontSize="md">Transfer preferences</Text>
+                            <Select onChange={(e) => setTransferPreferences(e.target.value)}>
+                                <option>Best return</option>
+                                <option>Fastest</option>
+                            </Select>
+                        </Box>
+                    </VStack>
                     <Box display="flex" pt="2">
-                        <Button onClick={sendTokens} isLoading={sending} isDisabled={
-                            tokens.filter((token) => token.selected).length === 0
-                        }>Send</Button>
+                        <Button onClick={sendTokens} isLoading={sending} isDisabled={isConfigCompleted} size="lg" width="xl">Send</Button>
                     </Box>
                 </Box>
             </VStack>
