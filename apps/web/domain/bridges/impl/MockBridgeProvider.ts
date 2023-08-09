@@ -2,6 +2,9 @@ import { ChainToken } from "../../model/ChainToken";
 import { BridgeOperation, BridgeOperationInformation, BridgeOperationStatusError, BridgeOperationStatusSuccess, BridgeProvider, BridgeProviderInformation } from "../BridgeProvider";
 
 export class MockBridgeProvider implements BridgeProvider {
+    getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string | undefined): Promise<number[]> {
+        throw new Error("Method not implemented.");
+    }
     async bridgeTokens(sourceWalletAddress: string, sourceChainId: number, sourceTokenAddress: string, destinationWalletAddress: string, destinationChainId: number, quantity: BigInt): Promise<BridgeOperation> {
         return new BridgeOperation("0x127", new BridgeOperationStatusSuccess());
     }
