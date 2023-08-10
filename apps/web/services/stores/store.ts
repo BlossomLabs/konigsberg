@@ -1,10 +1,10 @@
 import { createContext, useContext } from "react"; 
  
 import { BridgeService } from "../bridgeService";
-import { LiFiBridgeProvider } from "../../domain/bridges/impl/LiFiBridgeProvider";
+import { CelerBridgeProvider } from "../../infrastructure/bridges/celer/CelerBridgeProvider";
  
 import UserOptions from "./UserOptions";
-import { MockBridgeProvider } from "../../domain/bridges/impl/MockBridgeProvider";
+import { MockBridgeProvider } from "../../infrastructure/bridges/MockBridgeProvider";
 
 interface Store {
     // usual stores
