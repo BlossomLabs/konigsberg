@@ -5,11 +5,10 @@ import { ChainToken } from "../domain/model/ChainToken";
 import { store } from "../services/stores/store";
 
 export default function TokenRow(token: any, sending: boolean) {
-    
+
     const [selectedToken, setSelectedToken] = useState<boolean>(false);
     const [chainName, setChainName] = useState<string>("");
     const [amountToBeSent, setAmountToBeSent] = useState<number>(0);
-    const [storeTokens, setStoreTokens] = useState<any[]>(store.UserOptions.selectedTokens);
 
     const { address } = useAccount();
 
@@ -22,7 +21,7 @@ export default function TokenRow(token: any, sending: boolean) {
     // create an empty function to determine chainname from chainid
     useEffect(() => {
         function getChainName() {
-            switch(token.token.chainId) {
+            switch (token.token.chainId) {
                 case 1:
                     setChainName("Ethereum")
                     break;
@@ -40,14 +39,11 @@ export default function TokenRow(token: any, sending: boolean) {
         getChainName();
     }, [])
 
-    useEffect(() => {
-        store.UserOptions.selectedTokens = storeTokens;
-        console.log(store.UserOptions.selectedTokens)
-    }, [storeTokens])
+    console.log(store.UserBridgeOperation.operationTokens)
 
-    if(!balance.data?.formatted || balance.data?.formatted === "0.0" || chainName === "Unknown") {
+    if (!balance.data?.formatted || balance.data?.formatted === "0.0" || chainName === "Unknown") {
         return (
-            <></>    
+            <></>
         )
 
     } else {
@@ -55,7 +51,14 @@ export default function TokenRow(token: any, sending: boolean) {
             <Tr>
                 <Td>
                     <Checkbox onChange={(e) => {
-                        setSelectedToken(e.target.checked);
+                        if (e.target.checked) {
+                            setSelectedToken(e.target.checked);
+                            store.UserBridgeOperation.addOperationToken(token.token.symbol, token.token.chainId, amountToBeSent)
+                        } else {
+                            setSelectedToken(e.target.checked);
+                            store.UserBridgeOperation.removeOperationToken(token.token.symbol, token.token.chainId)
+                        }
+
                     }} isDisabled={token.sending} />
                 </Td>
                 <Td>
@@ -66,16 +69,15 @@ export default function TokenRow(token: any, sending: boolean) {
                 </Td>
                 <Td>{chainName}</Td>
                 <Td>
-                    {selectedToken ? <Input type="number" placeholder={String(balance.data?.formatted)} onChange={(e) => {
-                    const updatedTokens = [...storeTokens];
-                    updatedTokens[token.token.index].amountToBeSent = Number(e.target.value);
-                    setStoreTokens(updatedTokens);
+                    {selectedToken ? <Input type="number" value={String(amountToBeSent)} placeholder={String(balance.data?.formatted)} onChange={(e) => {
+                        setAmountToBeSent(Number(e.target.value));
+                        store.UserBridgeOperation.addOperationToken(token.token.symbol, token.token.chainId, Number(e.target.value))
                     }} isDisabled={token.sending} /> : String(balance.data?.formatted)}
                 </Td>
                 <Td>{selectedToken ? "Searching..." : "Not selected"}</Td>
                 {/*Add amount to be received, fee, bridge to be used. Selector to select among bridges. */}
             </Tr>
         )
-    }        
-    
+    }
+
 }
