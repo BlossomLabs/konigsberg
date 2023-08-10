@@ -9,7 +9,7 @@ function Page() {
     <>
       <Header />
       <Flex p="30" justifyContent="center">
-        <Box p="2" w="35vw">
+        <Box p="2" w="35vw" >
           <TokensSelector />
         </Box>
       </Flex>
