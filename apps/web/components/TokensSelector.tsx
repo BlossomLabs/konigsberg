@@ -37,23 +37,6 @@ export default function TokensSelector() {
 
     return (
         <div>
-            <Text as="b" fontSize="2xl">Select tokens</Text>
-            <HStack>
-                <Box>
-                    <Text as="b" fontSize="md">Network</Text>
-                    <Select onChange={(e) => store.UserBridgeOperation.setDestinationChainId(Number(e.target.value))}>
-                        <option value="1">Ethereum</option>
-                        <option value="10">Optimism</option>
-                    </Select>
-                    <Box>
-                        <Text as="b" fontSize="md">Transfer preferences</Text>
-                        <Select onChange={(e) => store.UserBridgeOperation.setTransferPreference(e.target.value)}>
-                            <option>Best return</option>
-                            <option>Fastest</option>
-                        </Select>
-                    </Box>
-                </Box>
-            </HStack>
             <VStack>
                 <Box>
                     <TableContainer>
