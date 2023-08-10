@@ -43,10 +43,29 @@ const zora: Chain = {
   }
 } 
 
+const polygon: Chain = {
+  id: 137,
+  name: 'Polygon',
+  network: 'polygon',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'MATIC',
+    symbol: 'MATIC',
+  }, 
+  rpcUrls: {
+    public: { http: ['https://polygon-rpc.com/'] },
+    default: { http: ['https://polygon-rpc.com/'] },
+  },
+  blockExplorers: {
+    public: { name: 'polygonscan', url: 'https://polygonscan.com/' },
+    default: { name: 'polygonscan', url: 'https://polygonscan.com/' },
+  }
+}
+
 // Configure wagmi chains
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet, optimism, base, zora, ...(process.env.NODE_ENV === "development" ? [goerli] : [])],
+  [mainnet, polygon, optimism, base, zora, ...(process.env.NODE_ENV === "development" ? [goerli] : [])],
   [publicProvider()]
 ) as { chains: Chain[], provider: any, webSocketProvider: any };
 
