@@ -7,8 +7,8 @@ export class OperationToken {
 export class OperationConfig {
     destinationChainId: number = 1;
     destinationAddress: string | undefined = undefined;
-    transferPreference: string | undefined = "Maximum return";
-    slippage: number | undefined = 1;
+    transferPreference: string = "Maximum return";
+    slippage: number = 1;
 }
 
 export default class UserBridgeOperation {
