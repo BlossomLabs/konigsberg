@@ -18,7 +18,7 @@ export default function Header() {
                         PREGEL BRIDGE
                     </Text>
                 </Flex>
-                <ConnectButton showBalance={false} chainStatus="none"/>
+                <ConnectButton showBalance={false} chainStatus="full"/>
             </Flex>
         </Box>
     )

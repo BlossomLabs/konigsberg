@@ -26,7 +26,7 @@ import { store } from '../services/stores/store';
 
 export default function TargetAccounts() {
 
-    const [symbol, setSymbol] = useState<string | undefined>(store.UserOptions.selectedToken.symbol)
+    const [symbol, setSymbol] = useState<string | undefined>(/*store.UserBridgeOperation.selectedToken.symbol*/)
 
     const { chain } = useNetwork();
 
