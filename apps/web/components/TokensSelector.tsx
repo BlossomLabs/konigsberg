@@ -8,12 +8,7 @@ import {
     Tbody,
     VStack,
     Button,
-    Tr,
-    Td,
-    Image,
     HStack,
-    Checkbox,
-    Input,
     Select
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
@@ -27,16 +22,6 @@ export default function TokensSelector() {
     const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
     const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([])
 
-    type Tokens = {
-        symbol: string,
-        name: string,
-        network: string,
-        balance: number,
-        imgUrl: string,
-        selected: boolean,
-        amountToBeSent: number | undefined
-    }
-
     useEffect(() => {
         (async () => {
             await store.bridgeService.getAllBridgeableTokensToChain(store.UserBridgeOperation.operationConfig.destinationChainId).then((tokens) => {
@@ -44,47 +29,6 @@ export default function TokensSelector() {
             })
         })()
     }, [])
-
-    const [tokens, setTokens] = useState<Tokens[]>([
-        {
-            symbol: "ETH",
-            name: "Ethereum",
-            network: "Ethereum",
-            balance: 0.1,
-            imgUrl: "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
-            selected: false,
-            amountToBeSent: undefined
-        },
-        {
-            symbol: "DAI",
-            name: "Dai",
-            network: "Ethereum",
-            balance: 100,
-            imgUrl: "https://assets.coingecko.com/coins/images/9956/small/dai-multi-collateral-mcd.png?1574218774",
-            selected: false,
-            amountToBeSent: undefined
-
-        },
-        {
-            symbol: "USDC",
-            name: "USD Coin",
-            network: "Ethereum",
-            balance: 100,
-            imgUrl: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389",
-            selected: false,
-            amountToBeSent: undefined
-        },
-        {
-            symbol: "USDT",
-            name: "Tether",
-            network: "Ethereum",
-            balance: 100,
-            imgUrl: "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png?1598003707",
-            selected: false,
-            amountToBeSent: undefined
-        },
-
-    ])
 
     const sendTokens = async () => {
         setSending(true)

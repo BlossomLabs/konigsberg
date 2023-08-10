@@ -1,7 +1,6 @@
 import { Tr, Td, Image, HStack, Checkbox, Input, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
-import { ChainToken } from "../domain/model/ChainToken";
 import { store } from "../services/stores/store";
 
 export default function TokenRow(token: any, sending: boolean) {
@@ -38,9 +37,7 @@ export default function TokenRow(token: any, sending: boolean) {
         }
         getChainName();
     }, [])
-
-    console.log(store.UserBridgeOperation.operationTokens)
-
+    
     if (!balance.data?.formatted || balance.data?.formatted === "0.0" || chainName === "Unknown") {
         return (
             <></>
