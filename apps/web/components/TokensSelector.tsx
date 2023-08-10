@@ -24,8 +24,6 @@ import TokenRow from "./TokenRow"
 export default function TokensSelector() {
 
     const [sending, setSending] = useState<boolean>(false)
-    const [network, setNetwork] = useState<number>(10)
-    const [transferPreferences, setTransferPreferences] = useState<string>("Best return")
     const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
     const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([])
 
@@ -41,7 +39,7 @@ export default function TokensSelector() {
 
     useEffect(() => {
         (async () => {
-            await store.bridgeService.getAllBridgeableTokensToChain(network).then((tokens) => {
+            await store.bridgeService.getAllBridgeableTokensToChain(store.UserBridgeOperation.operationConfig.destinationChainId).then((tokens) => {
                 setBridgeableTokens(tokens)
             })
         })()
@@ -96,13 +94,22 @@ export default function TokensSelector() {
     return (
         <div>
             <Text as="b" fontSize="2xl">Select tokens</Text>
-            <Box>
-                <Text as="b" fontSize="md">Network</Text>
-                <Select onChange={(e) => setNetwork(Number(e.target.value))}>
-                    <option value="1">Ethereum</option>
-                    <option value="10">Optimism</option>
-                </Select>
-            </Box>
+            <HStack>
+                <Box>
+                    <Text as="b" fontSize="md">Network</Text>
+                    <Select onChange={(e) => store.UserBridgeOperation.setDestinationChainId(Number(e.target.value))}>
+                        <option value="1">Ethereum</option>
+                        <option value="10">Optimism</option>
+                    </Select>
+                    <Box>
+                        <Text as="b" fontSize="md">Transfer preferences</Text>
+                        <Select onChange={(e) => store.UserBridgeOperation.setTransferPreference(e.target.value)}>
+                            <option>Best return</option>
+                            <option>Fastest</option>
+                        </Select>
+                    </Box>
+                </Box>
+            </HStack>
             <VStack>
                 <Box>
                     <TableContainer>
@@ -116,21 +123,12 @@ export default function TokensSelector() {
                             </Thead>
                             <Tbody>
                                 {bridgeableTokens.map((token, index) => (
-                                    <TokenRow token={token} sending={sending}/>
+                                    <TokenRow token={token} sending={sending} />
                                 )
                                 )}
                             </Tbody>
                         </Table>
                     </TableContainer>
-                    <VStack>
-                        <Box>
-                            <Text as="b" fontSize="md">Transfer preferences</Text>
-                            <Select onChange={(e) => setTransferPreferences(e.target.value)}>
-                                <option>Best return</option>
-                                <option>Fastest</option>
-                            </Select>
-                        </Box>
-                    </VStack>
                     <Box display="flex" pt="2">
                         <Button onClick={sendTokens} isLoading={sending} isDisabled={isConfigCompleted} size="lg" width="xl">Send</Button>
                     </Box>

@@ -4,8 +4,17 @@ export class OperationToken {
     amountToBeSent: number | undefined = undefined;
 }
 
+export class OperationConfig {
+    destinationChainId: number = 1;
+    destinationAddress: string | undefined = undefined;
+    transferPreference: string | undefined = "Best return";
+    slippage: number | undefined = 1;
+}
+
 export default class UserBridgeOperation {
     operationTokens: OperationToken[] = [];
+    operationConfig: OperationConfig = new OperationConfig();
+
     addOperationToken(symbol: string, chainId: number, amountToBeSent: number) {
         const operationExists = this.operationTokens.find((token) => token.symbol === symbol && token.chainId === chainId)
 
@@ -22,5 +31,21 @@ export default class UserBridgeOperation {
 
     removeOperationToken(symbol: string, chainId: number) {
         this.operationTokens = this.operationTokens.filter((token) => !(token.symbol === symbol && token.chainId === chainId));
+    }
+
+    setDestinationChainId(destinationChainId: number) {
+        this.operationConfig.destinationChainId = destinationChainId;
+    }
+
+    setDestinationAddress(destinationAddress: string) {
+        this.operationConfig.destinationAddress = destinationAddress;
+    }
+
+    setTransferPreference(transferPreference: string) {
+        this.operationConfig.transferPreference = transferPreference;
+    }
+
+    setSlippage(slippage: number) {
+        this.operationConfig.slippage = slippage;
     }
 }
