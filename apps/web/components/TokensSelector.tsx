@@ -16,14 +16,18 @@ import {
     Input,
     Select
 } from "@chakra-ui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { store } from "../services/stores/store"
+import { ChainToken } from "../domain/model/ChainToken"
+import TokenRow from "./TokenRow"
 
 export default function TokensSelector() {
 
     const [sending, setSending] = useState<boolean>(false)
-    const [network, setNetwork] = useState<string | undefined>(undefined)
+    const [network, setNetwork] = useState<number>(10)
     const [transferPreferences, setTransferPreferences] = useState<string>("Best return")
     const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
+    const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([])
 
     type Tokens = {
         symbol: string,
@@ -34,6 +38,14 @@ export default function TokensSelector() {
         selected: boolean,
         amountToBeSent: number | undefined
     }
+
+    useEffect(() => {
+        (async () => {
+            await store.bridgeService.getAllBridgeableTokensToChain(network).then((tokens) => {
+                setBridgeableTokens(tokens)
+            })
+        })()
+    }, [])
 
     const [tokens, setTokens] = useState<Tokens[]>([
         {
@@ -81,11 +93,16 @@ export default function TokensSelector() {
         // Implement sending logic here
     }
 
-
-
     return (
         <div>
             <Text as="b" fontSize="2xl">Select tokens</Text>
+            <Box>
+                <Text as="b" fontSize="md">Network</Text>
+                <Select onChange={(e) => setNetwork(Number(e.target.value))}>
+                    <option value="1">Ethereum</option>
+                    <option value="10">Optimism</option>
+                </Select>
+            </Box>
             <VStack>
                 <Box>
                     <TableContainer>
@@ -98,44 +115,14 @@ export default function TokensSelector() {
                                 <Th>Status</Th>
                             </Thead>
                             <Tbody>
-                                {tokens.map((token, index) => (
-                                    <Tr>
-                                        <Td>
-                                            <Checkbox onChange={(e) => {
-                                                const updatedTokens = [...tokens];
-                                                updatedTokens[index].selected = e.target.checked;
-                                                setTokens(updatedTokens);
-                                            }} isDisabled={sending} />
-                                        </Td>
-                                        <Td>
-                                            <HStack>
-                                                <Image src={token.imgUrl} width="30" height="30" />
-                                                <Text>{token.symbol}</Text>
-                                            </HStack>
-                                        </Td>
-                                        <Td>{token.network}</Td>
-                                        <Td>
-                                            {token.selected ? <Input type="number" placeholder={String(token.balance)} onChange={(e) => {
-                                                const updatedTokens = [...tokens];
-                                                updatedTokens[index].amountToBeSent = Number(e.target.value);
-                                            }} isDisabled={sending} /> : token.balance}
-                                        </Td>
-                                        <Td>{token.selected ? "Searching..." : "Not selected"}</Td>
-                                        {/*Add amount to be received, fee, bridge to be used. Selector to select among bridges. */}
-                                    </Tr>
+                                {bridgeableTokens.map((token, index) => (
+                                    <TokenRow token={token} sending={sending}/>
                                 )
                                 )}
                             </Tbody>
                         </Table>
                     </TableContainer>
                     <VStack>
-                        <Box>
-                            <Text as="b" fontSize="md">Network</Text>
-                            <Select onChange={(e) => setNetwork(e.target.value)}>
-                                <option>Ethereum</option>
-                                <option>Optimism</option>
-                            </Select>
-                        </Box>
                         <Box>
                             <Text as="b" fontSize="md">Transfer preferences</Text>
                             <Select onChange={(e) => setTransferPreferences(e.target.value)}>
