@@ -3,8 +3,9 @@ import { CelerApiTransferConfigResponse, anyToCelerApiTransferConfigResponse } f
 
 
 export class CelerApi {
-    apiVersion = "v2";
-    baseUrl = "https://cbridge-prod2.celer.app/" + this.apiVersion;
+    testBase = "https://cbridge-v2-test.celer.network"
+    prodBase = "https://cbridge-prod2.celer.app/v2"
+    baseUrl = this.prodBase;
 
 
     public axiosInstance = axios.create({

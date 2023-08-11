@@ -29,7 +29,7 @@ import { CelerApiToken } from "./CelerApiToken";
 //     }
 // }
 
-export interface CelerApiChainToken {
+export interface CelerApiTokenInfo {
     token: CelerApiToken;
     name: string;
     icon: string;
@@ -43,9 +43,9 @@ export interface CelerApiChainToken {
     delay_period: number;
 }
 
-export function celerApiChainTokenFromAny(a: any): CelerApiChainToken | undefined {
+export function celerApiTokenInfoFromAny(a: any): CelerApiTokenInfo | undefined {
     try {
-        return a as CelerApiChainToken;
+        return a as CelerApiTokenInfo;
     } catch (e) {
         return undefined;
     }
