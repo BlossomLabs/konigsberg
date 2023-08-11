@@ -20,15 +20,19 @@ interface TokenSelectorProps {
     destinationChainId: number
 }
 
-export default function TokensSelector({destinationChainId}: TokenSelectorProps) {
+export default function TokensSelector({ destinationChainId }: TokenSelectorProps) {
 
     const [sending, setSending] = useState<boolean>(false)
     const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
     const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([])
+    const [renderingRows, setRenderingRows] = useState<boolean[]>([])
 
     useEffect(() => {
         (async () => {
             store.bridgeService.getAllBridgeableTokensToChain(destinationChainId).then((tokens) => {
+                if (renderingRows.length !== tokens.length) {
+                    setRenderingRows(new Array(tokens.length).fill(false))
+                }
                 setBridgeableTokens(tokens)
             })
         })()
@@ -38,6 +42,20 @@ export default function TokensSelector({destinationChainId}: TokenSelectorProps)
         setSending(true)
         // Implement sending logic here
     }
+
+    const onRenderInfoUpdated = (index: number, rendered: boolean) => {
+        if (index < renderingRows.length && renderingRows[index] !== rendered) {
+            let newRenderingRows = [...renderingRows]
+            newRenderingRows[index] = rendered
+            setRenderingRows(newRenderingRows)
+        }
+    }
+
+    const isAnyRowRendered = (): boolean => {
+        return renderingRows.some((rendered) => rendered)
+    }
+
+    console.log(bridgeableTokens)
 
     return (
         <div>
@@ -54,15 +72,27 @@ export default function TokensSelector({destinationChainId}: TokenSelectorProps)
                             </Thead>
                             <Tbody>
                                 {bridgeableTokens.map((token, index) => (
-                                    <TokenRow token={token} sending={sending} />
+
+                                    <TokenRow token={token} sending={sending} index={index} onRenderInfoUpdated={onRenderInfoUpdated} />
                                 )
                                 )}
                             </Tbody>
                         </Table>
                     </TableContainer>
-                    <Box display="flex" pt="2">
-                        <Button onClick={sendTokens} isLoading={sending} isDisabled={isConfigCompleted} size="lg" width="xl">Send</Button>
-                    </Box>
+                    {isAnyRowRendered() && (
+                        <Box display="flex" pt="2">
+                            <Button onClick={sendTokens} isLoading={sending} isDisabled={isConfigCompleted} size="lg" width="xl">Send</Button>
+                        </Box>)}
+                    {!isAnyRowRendered() && (
+                        <VStack display="flex" pt="20">
+                            <Text fontSize="xl" fontWeight="bold" as="b" color="gray.500">
+                                There are no compatible tokens with balance in your wallet.
+                            </Text>
+                            <Text fontSize="lg" fontWeight="bold" color="gray.500">
+                                Please try with another destination network.
+                            </Text>
+                        </VStack>
+                    )}
                 </Box>
             </VStack>
         </div>
