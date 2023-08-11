@@ -1,14 +1,23 @@
 import { VStack, HStack, Box, Text, Select, Button, Input, InputRightAddon, InputGroup } from "@chakra-ui/react";
 import { store } from "../services/stores/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function OperationConfig() {
+interface OperationConfigProps {
+    onUserConfigOperationChanged: () => void
+}
+
+export default function OperationConfig({onUserConfigOperationChanged}: OperationConfigProps) {
 
     const [slipagge, setSlippage] = useState<number>(store.UserBridgeOperation.operationConfig.slippage)
     const [destinationChainId, setDestinationChainId] = useState<number>(store.UserBridgeOperation.operationConfig.destinationChainId)
     const [transferPreference, setTransferPreference] = useState<string>(store.UserBridgeOperation.operationConfig.transferPreference)
 
-    console.log(store.UserBridgeOperation.operationConfig.destinationChainId)
+    useEffect(() => {
+        store.UserBridgeOperation.setDestinationChainId(destinationChainId)
+        store.UserBridgeOperation.setTransferPreference(transferPreference)
+        store.UserBridgeOperation.setSlippage(slipagge)
+        onUserConfigOperationChanged()
+    }, [destinationChainId, transferPreference, slipagge])
 
     return (
         <HStack spacing={4}>
@@ -19,7 +28,6 @@ export default function OperationConfig() {
                 <Select
                     onChange={(e) => {
                         setDestinationChainId(Number(e.target.value))
-                        store.UserBridgeOperation.setDestinationChainId(destinationChainId)
                     }}
                 >
                     <option value="1">Ethereum</option>
@@ -33,7 +41,6 @@ export default function OperationConfig() {
                 <Select
                     onChange={(e) => {
                         setTransferPreference(e.target.value)
-                        store.UserBridgeOperation.setTransferPreference(transferPreference)
                     }}
                 >
                     <option>Maximum return</option>
@@ -44,11 +51,11 @@ export default function OperationConfig() {
                 <Box>
                     <Text as="b" fontSize="md">Slippage tolerance</Text>
                     <HStack>
-                        <Button onClick={() => { setSlippage(0.5); store.UserBridgeOperation.setSlippage(slipagge) }}>0.5%</Button>
-                        <Button onClick={() => { setSlippage(1); store.UserBridgeOperation.setSlippage(slipagge) }}>1%</Button>
-                        <Button onClick={() => { setSlippage(3); store.UserBridgeOperation.setSlippage(slipagge) }}>3%</Button>
+                        <Button onClick={() => setSlippage(0.5)}>0.5%</Button>
+                        <Button onClick={() => setSlippage(1)}>1%</Button>
+                        <Button onClick={() => setSlippage(3)}>3%</Button>
                         <InputGroup>
-                            <Input value={slipagge} onChange={(e) => { setSlippage(Number(e.target.value)); store.UserBridgeOperation.setSlippage(slipagge) }}></Input>
+                            <Input value={slipagge} onChange={(e) => setSlippage(Number(e.target.value))}></Input>
                             <InputRightAddon children="%" />
                         </InputGroup>
                     </HStack>
