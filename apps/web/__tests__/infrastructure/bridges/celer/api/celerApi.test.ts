@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { CelerApi } from "../../../../../infrastructure/bridges/celer/api/celerApi";
 import { CelerApiTransferConfigResponse } from "../../../../../infrastructure/bridges/celer/api/responses/CelerApiTransferConfigResponse";
-import { CelerApiChainToken } from "../../../../../infrastructure/bridges/celer/api/models/CelerApiChainToken";
+import { CelerApiTokenInfo } from "../../../../../infrastructure/bridges/celer/api/models/CelerApiTokenInfo";
 
 const celerApi: CelerApi = new CelerApi();
 
@@ -10,7 +10,7 @@ describe("Celer Api getTransferConfigs", () => {
     var response: CelerApiTransferConfigResponse | undefined;
     beforeAll(async () => {
         response = await celerApi.Bridge.getTransferConfigs();
-    });
+    }, 20*SECONDS);
     it(
         "no error",
         async () => {
@@ -22,13 +22,13 @@ describe("Celer Api getTransferConfigs", () => {
         "chain_token",
         async () => {
             // for chain 1, get first token and check name and symbol
-            const tokensForChain1: CelerApiChainToken[] | undefined = response?.chain_token.get(1);
+            const tokensForChain1: CelerApiTokenInfo[] | undefined = response?.chain_token.get(1);
 
             expect(tokensForChain1).not.toBeUndefined();
             expect(tokensForChain1?.length).toBeGreaterThan(0);
 
             if (tokensForChain1 == undefined) return;
-            const firstTokenForChain1: CelerApiChainToken | undefined =
+            const firstTokenForChain1: CelerApiTokenInfo | undefined =
                 tokensForChain1.length > 0 ? tokensForChain1[0] : undefined;
             expect(firstTokenForChain1).not.toBeUndefined();
 
