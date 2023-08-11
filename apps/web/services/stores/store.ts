@@ -16,7 +16,7 @@ interface Store {
 } 
  
 export const store: Store = { 
-    bridgeService: new BridgeService([new CelerBridgeProvider()]), 
+    bridgeService: new BridgeService([new MockBridgeProvider()]), 
     UserBridgeOperation: new UserBridgeOperation(),
 } 
  
