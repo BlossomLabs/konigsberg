@@ -1,8 +1,9 @@
-import { Tr, Td, Image, HStack, Checkbox, Input, Text } from "@chakra-ui/react"
+import { Button, Tr, Td, Image, HStack, Checkbox, Input, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import { mainnet, useAccount, useBalance } from "wagmi";
 import { store } from "../services/stores/store";
 import hopBridgeQuote from "../services/hopBridgeQuote";
+import TransactionInfoPopover from "./TransactionInfoPopover";
 
 interface TokenRowProps {
     token: any,
@@ -16,6 +17,7 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
     const [selectedToken, setSelectedToken] = useState<boolean>(false);
     const [chainName, setChainName] = useState<string>("");
     const [amountToBeSent, setAmountToBeSent] = useState<string>("");
+    const [quote, setQuote] = useState<any>(null);
 
     const { address } = useAccount();
 
@@ -65,8 +67,8 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
 
         if (selectedToken && Number(amountToBeSent) > 0) {
             hopBridgeQuote(Number(amountToBeSent), token.symbol, chainName.toLowerCase(), targetChainName, store.UserBridgeOperation.operationConfig.slippage, token.nDecimals).then((quote) => {
-                if(quote) {
-                    console.log(quote)
+                if (quote) {
+                    setQuote(quote);
                 }
             })
         }
@@ -106,13 +108,17 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
                 </Td>
                 <Td>{chainName}</Td>
                 <Td>
-                    {selectedToken ? 
-                    <Input type="text" value={String(amountToBeSent)} placeholder={String(balance.data?.formatted)} pattern="^\d*(\.\d*)?$" onChange={(e) => {
-                        setAmountToBeSent(e.target.value);
-                        store.UserBridgeOperation.addOperationToken(token.symbol, token.chainId, Number(e.target.value))
-                    }} isDisabled={token.sending} /> : String(balance.data?.formatted)}
+                    {selectedToken ?
+                        <Input type="text" value={String(amountToBeSent)} placeholder={String(balance.data?.formatted)} pattern="^\d*(\.\d*)?$" onChange={(e) => {
+                            setAmountToBeSent(e.target.value);
+                            store.UserBridgeOperation.addOperationToken(token.symbol, token.chainId, Number(e.target.value))
+                        }} isDisabled={token.sending} /> : String(balance.data?.formatted)}
                 </Td>
-                <Td>{selectedToken ? "Searching..." : "Not selected"}</Td>
+                <Td>{selectedToken && quote ? (
+                    <>
+                        <TransactionInfoPopover />
+                        <Button>Send</Button>
+                    </>) : "Not selected"}</Td>
                 {/*Add amount to be received, fee, bridge to be used. Selector to select among bridges. */}
             </Tr>
         )
