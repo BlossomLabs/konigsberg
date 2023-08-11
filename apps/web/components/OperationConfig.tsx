@@ -23,7 +23,7 @@ export default function OperationConfig({onUserConfigOperationChanged}: Operatio
         <HStack spacing={4}>
             <Box p="1">
                 <Text as="b" fontSize="md">
-                    Network
+                    Send to
                 </Text>
                 <Select
                     onChange={(e) => {

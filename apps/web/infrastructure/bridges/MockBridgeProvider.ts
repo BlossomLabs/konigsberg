@@ -17,8 +17,10 @@ export class MockBridgeProvider implements BridgeProvider {
     async getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]> {
         return [
             new ChainToken(10, "0x4200000000000000000000000000000000000042", "OP", 6, "https://s2.coinmarketcap.com/static/img/coins/64x64/11840.png"),
-            new ChainToken(137, "0x0000000000000000000000000000000000001010", "MATIC", 6, "https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png"),
-            new ChainToken(10, "0x4200000000000000000000000000000000000006", "WETH", 18, "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png")
+            new ChainToken(137, "0x0000000000000000000000000000000000001010", "MATIC", 18, "https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png"),
+            new ChainToken(10, "0x4200000000000000000000000000000000000006", "WETH", 18, "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"),
+            new ChainToken(10, "0x0000000000000000000000000000000000000000", "ETH", 18, "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"),
+            new ChainToken(42161, "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", "USDC", 6, "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"),
         ]
     }
     
