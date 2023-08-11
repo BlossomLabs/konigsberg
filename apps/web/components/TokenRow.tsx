@@ -1,7 +1,8 @@
 import { Tr, Td, Image, HStack, Checkbox, Input, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
-import { useAccount, useBalance } from "wagmi";
+import { mainnet, useAccount, useBalance } from "wagmi";
 import { store } from "../services/stores/store";
+import hopBridgeQuote from "../services/hopBridgeQuote";
 
 interface TokenRowProps {
     token: any,
@@ -10,11 +11,11 @@ interface TokenRowProps {
     onRenderInfoUpdated: (index: number, rendered: boolean) => void
 }
 
-export default function TokenRow({token, sending, index, onRenderInfoUpdated}: TokenRowProps) {
+export default function TokenRow({ token, sending, index, onRenderInfoUpdated }: TokenRowProps) {
 
     const [selectedToken, setSelectedToken] = useState<boolean>(false);
     const [chainName, setChainName] = useState<string>("");
-    const [amountToBeSent, setAmountToBeSent] = useState<number>(0);
+    const [amountToBeSent, setAmountToBeSent] = useState<string>("");
 
     const { address } = useAccount();
 
@@ -37,6 +38,9 @@ export default function TokenRow({token, sending, index, onRenderInfoUpdated}: T
                 case 137:
                     setChainName("Polygon")
                     break;
+                case 42161:
+                    setChainName("Arbitrum")
+                    break;
                 default:
                     setChainName("Unknown")
                     break;
@@ -44,7 +48,30 @@ export default function TokenRow({token, sending, index, onRenderInfoUpdated}: T
         }
         getChainName();
     }, [])
-    
+
+    useEffect(() => {
+
+        let targetChainName: string = "";
+
+        if (store.UserBridgeOperation.operationConfig.destinationChainId === 1) {
+            targetChainName = "ethereum"
+        } else if (store.UserBridgeOperation.operationConfig.destinationChainId === 10) {
+            targetChainName = "optimism"
+        } else if (store.UserBridgeOperation.operationConfig.destinationChainId === 42161) {
+            targetChainName = "arbitrum"
+        } else if (store.UserBridgeOperation.operationConfig.destinationChainId === 137) {
+            targetChainName = "polygon"
+        }
+
+        if (selectedToken && Number(amountToBeSent) > 0) {
+            hopBridgeQuote(Number(amountToBeSent), token.symbol, chainName.toLowerCase(), targetChainName, store.UserBridgeOperation.operationConfig.slippage, token.nDecimals).then((quote) => {
+                if(quote) {
+                    console.log(quote)
+                }
+            })
+        }
+    }, [selectedToken, amountToBeSent])
+
     if (!balance.data?.formatted || balance.data?.formatted === "0.0" || chainName === "Unknown") {
 
         onRenderInfoUpdated(index, false);
@@ -63,7 +90,7 @@ export default function TokenRow({token, sending, index, onRenderInfoUpdated}: T
                     <Checkbox onChange={(e) => {
                         if (e.target.checked) {
                             setSelectedToken(e.target.checked);
-                            store.UserBridgeOperation.addOperationToken(token.symbol, token.chainId, amountToBeSent)
+                            store.UserBridgeOperation.addOperationToken(token.symbol, token.chainId, Number(amountToBeSent))
                         } else {
                             setSelectedToken(e.target.checked);
                             store.UserBridgeOperation.removeOperationToken(token.symbol, token.chainId)
@@ -79,8 +106,9 @@ export default function TokenRow({token, sending, index, onRenderInfoUpdated}: T
                 </Td>
                 <Td>{chainName}</Td>
                 <Td>
-                    {selectedToken ? <Input type="number" value={String(amountToBeSent)} placeholder={String(balance.data?.formatted)} onChange={(e) => {
-                        setAmountToBeSent(Number(e.target.value));
+                    {selectedToken ? 
+                    <Input type="text" value={String(amountToBeSent)} placeholder={String(balance.data?.formatted)} pattern="^\d*(\.\d*)?$" onChange={(e) => {
+                        setAmountToBeSent(e.target.value);
                         store.UserBridgeOperation.addOperationToken(token.symbol, token.chainId, Number(e.target.value))
                     }} isDisabled={token.sending} /> : String(balance.data?.formatted)}
                 </Td>
