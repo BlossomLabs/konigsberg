@@ -16,7 +16,11 @@ import { store } from "../services/stores/store"
 import { ChainToken } from "../domain/model/ChainToken"
 import TokenRow from "./TokenRow"
 
-export default function TokensSelector() {
+interface TokenSelectorProps {
+    destinationChainId: number
+}
+
+export default function TokensSelector({destinationChainId}: TokenSelectorProps) {
 
     const [sending, setSending] = useState<boolean>(false)
     const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
@@ -24,11 +28,11 @@ export default function TokensSelector() {
 
     useEffect(() => {
         (async () => {
-            await store.bridgeService.getAllBridgeableTokensToChain(store.UserBridgeOperation.operationConfig.destinationChainId).then((tokens) => {
+            store.bridgeService.getAllBridgeableTokensToChain(destinationChainId).then((tokens) => {
                 setBridgeableTokens(tokens)
             })
         })()
-    }, [])
+    }, [destinationChainId])
 
     const sendTokens = async () => {
         setSending(true)

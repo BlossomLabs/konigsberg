@@ -2,7 +2,11 @@ import { VStack, HStack, Box, Text, Select, Button, Input, InputRightAddon, Inpu
 import { store } from "../services/stores/store";
 import { useEffect, useState } from "react";
 
-export default function OperationConfig() {
+interface OperationConfigProps {
+    onUserConfigOperationChanged: () => void
+}
+
+export default function OperationConfig({onUserConfigOperationChanged}: OperationConfigProps) {
 
     const [slipagge, setSlippage] = useState<number>(store.UserBridgeOperation.operationConfig.slippage)
     const [destinationChainId, setDestinationChainId] = useState<number>(store.UserBridgeOperation.operationConfig.destinationChainId)
@@ -12,7 +16,7 @@ export default function OperationConfig() {
         store.UserBridgeOperation.setDestinationChainId(destinationChainId)
         store.UserBridgeOperation.setTransferPreference(transferPreference)
         store.UserBridgeOperation.setSlippage(slipagge)
-
+        onUserConfigOperationChanged()
     }, [destinationChainId, transferPreference, slipagge])
 
     return (
@@ -24,7 +28,6 @@ export default function OperationConfig() {
                 <Select
                     onChange={(e) => {
                         setDestinationChainId(Number(e.target.value))
-
                     }}
                 >
                     <option value="1">Ethereum</option>

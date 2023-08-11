@@ -4,10 +4,18 @@ import TokensSelector from "../components/TokensSelector";
 
 import { Flex, Box, Text, VStack, HStack } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
+import { useState } from "react";
+import { store } from "../services/stores/store";
 
 function Page() {
 
   const { address } = useAccount();
+
+  const [destinationChainId, setDestinationChainId] = useState<number>(1)
+
+  const userConfigOperationChanged = () => {
+    setDestinationChainId(store.UserBridgeOperation.operationConfig.destinationChainId)
+  }
 
   return (
     <>
@@ -17,9 +25,9 @@ function Page() {
           <VStack p="30" justifyContent="center">
             <Text as="b" color="white" fontSize="4xl">Transfer tokens</Text>
             <HStack>
-              <OperationConfig />
+              <OperationConfig onUserConfigOperationChanged={userConfigOperationChanged} />
             </HStack>
-            <TokensSelector />
+            <TokensSelector destinationChainId={destinationChainId} />
           </VStack>
         )}
         {!address && (
