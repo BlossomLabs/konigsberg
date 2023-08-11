@@ -1,6 +1,6 @@
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, Chain, Client } from "wagmi";
-import { goerli, mainnet, optimism } from "wagmi/chains";
+import { arbitrum, goerli, mainnet, optimism } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 // Custom chains
@@ -65,7 +65,7 @@ const polygon: Chain = {
 // Configure wagmi chains
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet, polygon, optimism, base, zora, ...(process.env.NODE_ENV === "development" ? [goerli] : [])],
+  [mainnet, arbitrum, polygon, optimism, base, zora, ...(process.env.NODE_ENV === "development" ? [goerli] : [])],
   [publicProvider()]
 ) as { chains: Chain[], provider: any, webSocketProvider: any };
 
