@@ -67,28 +67,14 @@ export class CelerBridgeProvider implements BridgeProvider {
         });
     }
 
-    async bridgeTokens(
-        sourceWalletId: string,
-        sourceChainId: number,
-        sourceTokenId: string,
-        destinationWalletId: string,
-        destinationChainId: number,
-        quantity: BigInt
-    ): Promise<BridgeOperation> {
-        // TODO: implement for lifi
-        return new BridgeOperation(
-            "0",
-            new BridgeOperationStatusError("ERR_NOT_IMPL", "Bridge provider not implemented")
-        );
-    }
     async getBridgeProviderQuoteInformation(
-        sourceWalletId: string,
         sourceChainId: number,
-        sourceTokenId: string,
+        sourceTokenAddress: string,
         destinationChainId: number,
-        quantity: BigInt
-    ): Promise<BridgeOperationInformation> {
+        quantity: BigInt,
+        slippage: number
+    ): Promise<BridgeOperationInformation|undefined> {
         // TODO: implement for lifi
-        return new BridgeOperationInformation(BigInt(0), BigInt(0));
+        throw new Error("Method not implemented.");
     }
 }

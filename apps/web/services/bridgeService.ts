@@ -4,6 +4,11 @@
 import { BridgeProvider } from "../domain/bridges/BridgeProvider";
 import { ChainToken } from "../domain/model/ChainToken";
 
+enum BestBridgeProviderType {
+    BEST_TIME,
+    BEST_RETURN
+}
+
 /**
  * Service Methods
  */
@@ -64,8 +69,8 @@ export class BridgeService {
         return [];
     }
 
-    public getBestBridgeProviderForBridging = async (originChainId: number, destinationChainId: number, tokenAddress: string) : Promise<BridgeProvider|undefined> => {
+    public getBestBridgeProviderForBridging = async (originChainId: number, destinationChainId: number, tokenAddress: string, bestType: BestBridgeProviderType) : Promise<BridgeProvider|undefined> => {
         // TODO
         return undefined;
-    }
+    }   
 }
