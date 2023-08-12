@@ -20,11 +20,23 @@ export class BridgeOperation {
 }
 
 export class BridgeOperationInformation {
-    public readonly estimatedOperationCost: BigInt;
+    public readonly estimatedAmount: BigInt;
+    public readonly contractAddress: string;
+    public readonly transactionData: string;
+    public readonly transactionValue: BigInt;
     public readonly estimatedFee: BigInt;
-    constructor(estimatedOperationCost: BigInt, estimatedFee: BigInt) {
+    constructor(
+        estimatedAmount: BigInt,
+        contractAddress: string,
+        transactionData: string,
+        transactionValue: BigInt,
+        estimatedFee: BigInt
+    ) {
+        this.estimatedAmount = estimatedAmount;
+        this.contractAddress = contractAddress;
+        this.transactionData = transactionData;
+        this.transactionValue = transactionValue;
         this.estimatedFee = estimatedFee;
-        this.estimatedOperationCost = estimatedOperationCost;
     }
 }
 
@@ -38,26 +50,16 @@ export class BridgeProviderInformation {
 }
 
 export interface BridgeProvider {
-    // exec
-    bridgeTokens(
-        sourceWalletAddress: string,
-        sourceChainId: number,
-        sourceTokenAddress: string,
-        destinationWalletAddress: string,
-        destinationChainId: number,
-        quantity: BigInt
-    ): Promise<BridgeOperation>;
-
     // info
     getBridgeProviderQuoteInformation(
-        sourceWalletAddress: string,
         sourceChainId: number,
-        sourceTokenAddress: string,
+        sourceTokenAddress: string | null,
         destinationChainId: number,
-        quantity: BigInt
-    ): Promise<BridgeOperationInformation>;
+        quantity: BigInt,
+        slippage: number,
+        recipientAddress: string
+    ): Promise<BridgeOperationInformation | undefined>;
     getBridgeProviderInformation(): BridgeProviderInformation;
     getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]>;
     getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string): Promise<number[]>;
-    
 }
