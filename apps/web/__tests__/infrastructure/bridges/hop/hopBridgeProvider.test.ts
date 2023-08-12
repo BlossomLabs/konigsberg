@@ -73,7 +73,6 @@ describe("Hop sdk ", () => {
              ***************************/ 
             // send to 1
             var supportedResult : ChainToken[] = await hopBridgeProvider.getAllBridgeableTokensToChain(1);
-            console.log(supportedResult)
             expect(supportedResult.length).toEqual(2);
             expect(supportedResult[0].chainId).toEqual(10);
             expect(supportedResult[0].contractAddress).toBeNull();
