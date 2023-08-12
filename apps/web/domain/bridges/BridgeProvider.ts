@@ -25,18 +25,21 @@ export class BridgeOperationInformation {
     public readonly transactionData: string;
     public readonly transactionValue: BigInt;
     public readonly estimatedFee: BigInt;
+    public readonly estimatedDate: number;
     constructor(
         estimatedAmount: BigInt,
         contractAddress: string,
         transactionData: string,
         transactionValue: BigInt,
-        estimatedFee: BigInt
+        estimatedFee: BigInt,
+        estimatedDate: number
     ) {
         this.estimatedAmount = estimatedAmount;
         this.contractAddress = contractAddress;
         this.transactionData = transactionData;
         this.transactionValue = transactionValue;
         this.estimatedFee = estimatedFee;
+        this.estimatedDate = estimatedDate
     }
 }
 
@@ -61,5 +64,5 @@ export interface BridgeProvider {
     ): Promise<BridgeOperationInformation | undefined>;
     getBridgeProviderInformation(): BridgeProviderInformation;
     getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]>;
-    getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string): Promise<number[]>;
+    getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string|null): Promise<number[]>;
 }
