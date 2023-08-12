@@ -66,7 +66,8 @@ export class HopBridgeProvider implements BridgeProvider {
                 to,
                 transactionData,
                 transactionValue,
-                BigInt(quoteResponse.amountIn) - BigInt(quoteResponse.estimatedRecieved)
+                BigInt(quoteResponse.amountIn) - BigInt(quoteResponse.estimatedRecieved),
+                quoteResponse.deadline
             );
         } catch (error) {
             console.error("Error fetching data:", error);
