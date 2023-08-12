@@ -61,5 +61,5 @@ export interface BridgeProvider {
     ): Promise<BridgeOperationInformation | undefined>;
     getBridgeProviderInformation(): BridgeProviderInformation;
     getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]>;
-    getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string): Promise<number[]>;
+    getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string|null): Promise<number[]>;
 }

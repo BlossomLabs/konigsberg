@@ -8,8 +8,11 @@ import {
 import { ChainToken } from "../../../domain/model/ChainToken";
 import { HopConfig } from "./config/HopConfig";
 import hopConfigJson from "./config/hopConfig.json";
+import { HopApi } from "./api/hopApi";
 
 export class HopBridgeProvider implements BridgeProvider {
+    private api: HopApi = new HopApi();
+
     async getBridgeProviderQuoteInformation(
         sourceChainId: number,
         sourceTokenAddress: string | null,
@@ -18,24 +21,39 @@ export class HopBridgeProvider implements BridgeProvider {
         slippage: number,
         recipientAddress: string
     ): Promise<BridgeOperationInformation | undefined> {
-        const hopQuoteUrl = `https://api.hop.exchange/v1/quote?amount=${quantity.toString()}&token=${sourceTokenAddress}&fromChain=${sourceChainId}&toChain=${destinationChainId}&slippage=${slippage}`;
+        const hopConfig: HopConfig = hopConfigJson;
 
         try {
-            const quoteResponse = await fetch(hopQuoteUrl);
-            const quoteJson = await quoteResponse.json();
-            const hopConfig: HopConfig = hopConfigJson;
+            const sourceChainName = hopConfigJson.chainsInfo.find(c => c.chainId == sourceChainId)?.chainName
+            if(sourceChainName == undefined) return undefined;
+
+            const destinationChainName = hopConfigJson.chainsInfo.find(c => c.chainId == destinationChainId)?.chainName
+            if(destinationChainName == undefined) return undefined;
+
+            const tokenSymbol = hopConfigJson.contracts.find(c => c.originChain == sourceChainId)?.originToken
+            if(tokenSymbol == undefined) return undefined;
+
+            const quoteResponse = await this.api.Bridge.getquote({
+                sourceChainName: sourceChainName, // chain name
+                sourceToken: tokenSymbol, // token symbol
+                destinationChainName: destinationChainName, // chain name
+                quantity: quantity,
+                slippage: slippage,
+            });
+            if(quoteResponse == undefined)
+                return undefined;
 
             const contractInfo = hopConfig.contracts.find(
-                (c) => c.originChain === sourceChainId && c.originToken === sourceTokenAddress
+                (c) => c.originChain === sourceChainId && c.originTokenAddress === sourceTokenAddress
             );
 
             const transactionData = this.prepareTransactionData(
                 sourceChainId,
                 destinationChainId,
                 recipientAddress,
-                quoteJson
+                quoteResponse
             );
-            const transactionValue = contractInfo?.originToken == "ETH" ? quoteJson.amountIn : 0;
+            const transactionValue = contractInfo?.originToken == "ETH" ? BigInt(quoteResponse.amountIn) : BigInt(0);
 
             if (!contractInfo?.bridgeAddress) {
                 console.error("Error: Missing bridge address");
@@ -44,11 +62,11 @@ export class HopBridgeProvider implements BridgeProvider {
 
             const to = contractInfo.bridgeAddress;
             return new BridgeOperationInformation(
-                quoteJson.estimatedRecieved,
+                BigInt(quoteResponse.estimatedRecieved),
                 to,
                 transactionData,
                 transactionValue,
-                quoteJson.estimatedFee
+                BigInt(quoteResponse.amountIn) - BigInt(quoteResponse.estimatedRecieved)
             );
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -58,40 +76,43 @@ export class HopBridgeProvider implements BridgeProvider {
     getBridgeProviderInformation(): BridgeProviderInformation {
         return new BridgeProviderInformation("hopBridge", "Hop Bridge");
     }
-    async getAllBridgeableTokensToChain(
-        destinationChainId: number,
-        originChainId: number | undefined
-    ): Promise<ChainToken[]> {
+    async getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]> {
         const hopConfig: HopConfig = hopConfigJson;
 
-        const availableDestinationChains = hopConfig.contracts
-            .map((v) => v.originChain)
-            .filter((v) => v != originChainId);
+        // check destination is available
+        const availableDestinationChains = this.getAvailableDestinationChains(originChainId);
+        if (!availableDestinationChains.includes(destinationChainId)) return [];
 
+        // get contracts with the origin argument (where origin != destination)
         const contracts = hopConfig.contracts.filter((c) => {
-            if(!availableDestinationChains.includes(destinationChainId))
-                return false;
-            if(originChainId != undefined)
-                return c.originChain == originChainId;
-            return true;
+            if (c.originChain == destinationChainId) return false;
+            if (originChainId == undefined) return true;
+            return c.originChain == originChainId;
         });
 
+        // convert to ChainToken
         const tokens = hopConfig.tokens;
-
-        if (contracts == undefined) return [];
-
         return contracts.flatMap((e) => {
-            const token = tokens.find((t)=> t.token === e.originToken);
-            if(token == undefined)
-                return [];
-            return new ChainToken(e.originChain, token.tokenAddress, token.token, token.nDecimals, token.imgUrl)
+            const token = tokens.find((t) => t.token === e.originToken);
+            if (token == undefined) return [];
+            return new ChainToken(e.originChain, e.originTokenAddress, token.token, token.nDecimals, token.imgUrl);
         });
     }
-    getAllPossibleOriginChainsToChain(
+    async getAllPossibleOriginChainsToChain(
         destinationChainId: number,
-        tokenAddress: string | undefined
+        tokenAddress?: string | null
     ): Promise<number[]> {
-        throw new Error("Method not implemented.");
+        const hopConfig: HopConfig = hopConfigJson;
+
+        const availableDestinationChains = this.getAvailableDestinationChains();
+        if (!availableDestinationChains.includes(destinationChainId)) return [];
+
+        const contracts = hopConfig.contracts.filter((c) => {
+            if (tokenAddress == undefined) return true;
+            c.originTokenAddress == tokenAddress;
+        });
+
+        return contracts.map((c) => c.originChain).filter((c) => c != destinationChainId);
     }
 
     private prepareTransactionData(
@@ -101,10 +122,9 @@ export class HopBridgeProvider implements BridgeProvider {
         quoteData: any
     ): any {
         const iface = new ethers.utils.Interface([
-            "sendToL2(uint256 chainId, address recipient, uint256 amount, uint256 amountOutMin, uint256 deadline, address relayer, uint256 relayerFee)",
-            "swapAndSend(uint256 chainId, address recipient, uint256 amount, uint256 bonderFee, uint256 amountOutMin, uint256 deadline, uint256 destinationAmountOutMin, uint256 destinationDeadline)",
+            "function sendToL2(uint256 chainId, address recipient, uint256 amount, uint256 amountOutMin, uint256 deadline, address relayer, uint256 relayerFee)",
+            "function swapAndSend(uint256 chainId, address recipient, uint256 amount, uint256 bonderFee, uint256 amountOutMin, uint256 deadline, uint256 destinationAmountOutMin, uint256 destinationDeadline)",
         ]);
-
         var data;
         if (sourceChainId === 1) {
             data = iface.encodeFunctionData("sendToL2", [
@@ -129,5 +149,10 @@ export class HopBridgeProvider implements BridgeProvider {
             ]);
         }
         return data;
+    }
+
+    private getAvailableDestinationChains(originChain?: number): number[] {
+        const hopConfig: HopConfig = hopConfigJson;
+        return hopConfig.contracts.map((v) => v.originChain).filter((c) => c != originChain);
     }
 }
