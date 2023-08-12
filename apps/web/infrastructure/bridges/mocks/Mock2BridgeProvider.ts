@@ -18,7 +18,6 @@ export class Mock2BridgeProvider implements BridgeProvider {
         if (sourceTokenAddress != null) return undefined; // only supporting eth
 
         if (!this.allowedChains.includes(sourceChainId) || !this.allowedChains.includes(destinationChainId)){
-            console.log("not in allowed chains")
             return undefined; // not supporting one of the chains
         }
 

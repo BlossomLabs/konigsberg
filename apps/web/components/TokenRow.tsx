@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { mainnet, useAccount, useBalance } from "wagmi";
 import { store } from "../services/stores/store";
 import TransactionInfoPopover from "./TransactionInfoPopover";
+import { ChainToken } from "../domain/model/ChainToken";
+import { BridgeOperationInformation } from "../domain/bridges/BridgeProvider";
 
 interface TokenRowProps {
-    token: any,
+    token: ChainToken,
     sending: boolean,
     index: number,
     onRenderInfoUpdated: (index: number, rendered: boolean) => void
@@ -58,7 +60,7 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
     useEffect(() => {
 
         let targetChainName: string = "";
-        let transferPreference: any;
+        let transferPreference: BestBridgeProviderType;
 
         if (store.UserBridgeOperation.operationConfig.destinationChainId === 1) {
             targetChainName = "ethereum"
@@ -79,18 +81,32 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
         if (selectedToken && Number(amountToBeSent) > 0) {
             // TODO: call BridgeService getBestBridgeProviderForBridging and, after having a BridgeProvider, call getBridgeProviderQuoteInformation
             // with getBridgeProviderQuoteInformation, do the transaction
+            const bigIntAmount = Number(amountToBeSent) * Math.pow(10,token.nDecimals);
             store.bridgeService.getBestBridgeProviderForBridging(
                 token.chainId,
                 token.contractAddress,
                 store.UserBridgeOperation.operationConfig.destinationChainId,
-                BigInt(amountToBeSent), 
+                BigInt(bigIntAmount),
                 store.UserBridgeOperation.operationConfig.slippage,
                 String(address),
                 transferPreference,
             ).then((bridgeProvider) => {
                 console.log("hi")
-                console.log(bridgeProvider);
-                // to do implement getBridgeProviderQuoteInformation
+                console.log(JSON.stringify(bridgeProvider?.getBridgeProviderInformation()));
+
+                bridgeProvider?.getBridgeProviderQuoteInformation(token.chainId,
+                    token.contractAddress,
+                    store.UserBridgeOperation.operationConfig.destinationChainId,
+                    BigInt(bigIntAmount),
+                    store.UserBridgeOperation.operationConfig.slippage,
+                    String(address)
+                ).then((quoteInfo: BridgeOperationInformation | undefined) => {
+                    console.log(quoteInfo);
+                    // TODO: use following parameters to call contract
+                    // quoteInfo?.contractAddress
+                    // quoteInfo?.transactionValue
+                    // quoteInfo?.transactionData
+                });
             })
         }
     }, [selectedToken, amountToBeSent])
@@ -119,7 +135,7 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
                             store.UserBridgeOperation.removeOperationToken(token.symbol, token.chainId)
                         }
 
-                    }} isDisabled={token.sending} />
+                    }} isDisabled={sending} />
                 </Td>
                 <Td>
                     <HStack>
@@ -133,7 +149,7 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
                         <Input type="text" value={String(amountToBeSent)} placeholder={String(balance.data?.formatted)} pattern="^\d*(\.\d*)?$" onChange={(e) => {
                             setAmountToBeSent(e.target.value);
                             store.UserBridgeOperation.addOperationToken(token.symbol, token.chainId, Number(e.target.value))
-                        }} isDisabled={token.sending} /> : String(balance.data?.formatted)}
+                        }} isDisabled={sending} /> : String(balance.data?.formatted)}
                 </Td>
                 <Td>{selectedToken && quote ? (
                     <>

@@ -9,6 +9,7 @@ import { ChainToken } from "../../../domain/model/ChainToken";
 import { HopConfig } from "./config/HopConfig";
 import hopConfigJson from "./config/hopConfig.json";
 import { HopApi } from "./api/hopApi";
+import { HopApiQuoteResponse } from "./api/request_response/HopApiQuoteResponse";
 
 export class HopBridgeProvider implements BridgeProvider {
     private api: HopApi = new HopApi();
@@ -24,14 +25,15 @@ export class HopBridgeProvider implements BridgeProvider {
         const hopConfig: HopConfig = hopConfigJson;
 
         try {
-            const sourceChainName = hopConfigJson.chainsInfo.find(c => c.chainId == sourceChainId)?.chainName
-            if(sourceChainName == undefined) return undefined;
+            const sourceChainName = hopConfigJson.chainsInfo.find((c) => c.chainId == sourceChainId)?.chainName;
+            if (sourceChainName == undefined) return undefined;
 
-            const destinationChainName = hopConfigJson.chainsInfo.find(c => c.chainId == destinationChainId)?.chainName
-            if(destinationChainName == undefined) return undefined;
+            const destinationChainName = hopConfigJson.chainsInfo.find((c) => c.chainId == destinationChainId)
+                ?.chainName;
+            if (destinationChainName == undefined) return undefined;
 
-            const tokenSymbol = hopConfigJson.contracts.find(c => c.originChain == sourceChainId)?.originToken
-            if(tokenSymbol == undefined) return undefined;
+            const tokenSymbol = hopConfigJson.contracts.find((c) => c.originChain == sourceChainId)?.originToken;
+            if (tokenSymbol == undefined) return undefined;
 
             const quoteResponse = await this.api.Bridge.getquote({
                 sourceChainName: sourceChainName, // chain name
@@ -40,8 +42,7 @@ export class HopBridgeProvider implements BridgeProvider {
                 quantity: quantity,
                 slippage: slippage,
             });
-            if(quoteResponse == undefined)
-                return undefined;
+            if (quoteResponse == undefined) return undefined;
 
             const contractInfo = hopConfig.contracts.find(
                 (c) => c.originChain === sourceChainId && c.originTokenAddress === sourceTokenAddress
@@ -120,7 +121,7 @@ export class HopBridgeProvider implements BridgeProvider {
         sourceChainId: number,
         destinationChainId: number,
         recipientAddress: string,
-        quoteData: any
+        quoteData: HopApiQuoteResponse
     ): any {
         const iface = new ethers.utils.Interface([
             "function sendToL2(uint256 chainId, address recipient, uint256 amount, uint256 amountOutMin, uint256 deadline, address relayer, uint256 relayerFee)",
@@ -131,8 +132,8 @@ export class HopBridgeProvider implements BridgeProvider {
             data = iface.encodeFunctionData("sendToL2", [
                 destinationChainId,
                 recipientAddress,
-                quoteData.amountIn,
-                quoteData.amountOutMin,
+                BigInt(quoteData.amountIn),
+                BigInt(quoteData.amountOutMin),
                 quoteData.deadline,
                 "0x710bDa329b2a6224E4B44833DE30F38E7f81d564",
                 0,
@@ -141,12 +142,12 @@ export class HopBridgeProvider implements BridgeProvider {
             data = iface.encodeFunctionData("swapAndSend", [
                 sourceChainId,
                 recipientAddress,
-                quoteData.amountIn,
-                quoteData.bonderFee,
-                quoteData.amountOutMin,
+                BigInt(quoteData.amountIn),
+                BigInt(quoteData.bonderFee),
+                BigInt(quoteData.amountOutMin),
                 quoteData.deadline,
-                quoteData.destinationAmountOutMin,
-                quoteData.destinationDeadline,
+                BigInt(quoteData.destinationAmountOutMin??0),
+                BigInt(quoteData.destinationDeadline??0),
             ]);
         }
         return data;
