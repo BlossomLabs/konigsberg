@@ -11,6 +11,11 @@ interface TokenRowProps {
     onRenderInfoUpdated: (index: number, rendered: boolean) => void
 }
 
+enum BestBridgeProviderType {
+    BEST_TIME,
+    BEST_RETURN,
+}
+
 export default function TokenRow({ token, sending, index, onRenderInfoUpdated }: TokenRowProps) {
 
     const [selectedToken, setSelectedToken] = useState<boolean>(false);
@@ -53,6 +58,7 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
     useEffect(() => {
 
         let targetChainName: string = "";
+        let transferPreference: any;
 
         if (store.UserBridgeOperation.operationConfig.destinationChainId === 1) {
             targetChainName = "ethereum"
@@ -64,9 +70,28 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
             targetChainName = "polygon"
         }
 
+        if(store.UserBridgeOperation.operationConfig.transferPreference === "Maximum return") {
+            transferPreference = BestBridgeProviderType.BEST_RETURN
+        } else {
+            transferPreference = BestBridgeProviderType.BEST_TIME
+        }
+
         if (selectedToken && Number(amountToBeSent) > 0) {
             // TODO: call BridgeService getBestBridgeProviderForBridging and, after having a BridgeProvider, call getBridgeProviderQuoteInformation
             // with getBridgeProviderQuoteInformation, do the transaction
+            store.bridgeService.getBestBridgeProviderForBridging(
+                token.chainId,
+                token.contractAddress,
+                store.UserBridgeOperation.operationConfig.destinationChainId,
+                BigInt(amountToBeSent), 
+                store.UserBridgeOperation.operationConfig.slippage,
+                String(address),
+                transferPreference,
+            ).then((bridgeProvider) => {
+                console.log("hi")
+                console.log(bridgeProvider);
+                // to do implement getBridgeProviderQuoteInformation
+            })
         }
     }, [selectedToken, amountToBeSent])
 
