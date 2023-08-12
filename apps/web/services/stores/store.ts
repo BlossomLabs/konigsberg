@@ -4,8 +4,9 @@ import { BridgeService } from "../bridgeService";
 import { CelerBridgeProvider } from "../../infrastructure/bridges/celer/CelerBridgeProvider";
  
 import UserOptions from "./UserBridgeOperation";
-import { MockBridgeProvider } from "../../infrastructure/bridges/MockBridgeProvider";
+import { MockBridgeProvider } from "../../infrastructure/bridges/mocks/MockBridgeProvider";
 import UserBridgeOperation from "./UserBridgeOperation";
+import { HopBridgeProvider } from "../../infrastructure/bridges/hop/HopBridgeProvider";
 
 interface Store {
     // usual stores
@@ -16,7 +17,7 @@ interface Store {
 } 
  
 export const store: Store = { 
-    bridgeService: new BridgeService([new MockBridgeProvider()]), 
+    bridgeService: new BridgeService([new HopBridgeProvider()]), 
     UserBridgeOperation: new UserBridgeOperation(),
 } 
  
