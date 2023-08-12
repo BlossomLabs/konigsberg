@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { mainnet, useAccount, useBalance } from "wagmi";
 import { store } from "../services/stores/store";
 import hopBridgeQuote from "../services/hopBridgeQuote";
-import TransactionInfoPopover from "./TransactionInfoPopover";
 
 interface TokenRowProps {
     token: any,
@@ -66,11 +65,8 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
         }
 
         if (selectedToken && Number(amountToBeSent) > 0) {
-            hopBridgeQuote(Number(amountToBeSent), token.symbol, chainName.toLowerCase(), targetChainName, store.UserBridgeOperation.operationConfig.slippage, token.nDecimals).then((quote) => {
-                if (quote) {
-                    setQuote(quote);
-                }
-            })
+            // TODO: call BridgeService getBestBridgeProviderForBridging and, after having a BridgeProvider, call getBridgeProviderQuoteInformation
+            // with getBridgeProviderQuoteInformation, do the transaction
         }
     }, [selectedToken, amountToBeSent])
 

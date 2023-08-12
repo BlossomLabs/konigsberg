@@ -1,0 +1,30 @@
+{
+    "contracts": [
+        {
+            "originChain": 1,
+            "originToken": "ETH",
+            "originTokenAddress" : null,
+            "bridgeAddress" : "0xb8901acB165ed027E32754E0FFe830802919727f"
+        },
+        {
+            "originChain": 10,
+            "originToken": "ETH",
+            "originTokenAddress" : null,
+            "bridgeAddress" : "0x86ca30bef97fb651b8d866d45503684b90cb3312"
+        },
+        {
+            "originChain": 8453,
+            "originToken": "ETH",
+            "originTokenAddress" : null,
+            "bridgeAddress" : "0x10541b07d8ad2647dc6cd67abd4c03575dade261"
+        }
+    ],
+    "tokens" : [
+        {
+            "token": "ETH",
+            "imgUrl": "https://get.celer.app/cbridge-icons/chain-icon/ETH.png",
+            "nDecimals": 18,
+            "tokenAddress": null
+        }
+    ]
+}
