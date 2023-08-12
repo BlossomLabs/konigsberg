@@ -1,6 +1,7 @@
 export interface HopConfig {
     contracts: HopContractInfo[];
-    tokens: HopTokenInfo[]
+    tokens: HopTokenInfo[];
+    chainsInfo : HopChainInfo[];
 }
 
 export interface HopContractInfo {
@@ -14,5 +15,9 @@ export interface HopTokenInfo {
     token: string;
     imgUrl: string;
     nDecimals: number;
-    tokenAddress: string | null;
+}
+
+export interface HopChainInfo {
+    chainId: number;
+    chainName: string;
 }

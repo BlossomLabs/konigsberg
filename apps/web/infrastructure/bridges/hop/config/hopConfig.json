@@ -23,8 +23,21 @@
         {
             "token": "ETH",
             "imgUrl": "https://get.celer.app/cbridge-icons/chain-icon/ETH.png",
-            "nDecimals": 18,
-            "tokenAddress": null
+            "nDecimals": 18
+        }
+    ],
+    "chainsInfo" : [
+        {
+            "chainId": 1,
+            "chainName" : "mainnet"
+        },
+        {
+            "chainId": 10,
+            "chainName": "optimism"
+        },
+        {
+            "chainId": 8453,
+            "chainName": "base"
         }
     ]
 }

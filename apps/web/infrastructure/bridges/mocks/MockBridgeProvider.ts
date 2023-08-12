@@ -1,4 +1,4 @@
-import { ChainToken } from "../../domain/model/ChainToken";
+import { ChainToken } from "../../../domain/model/ChainToken";
 import {
     BridgeOperation,
     BridgeOperationInformation,
@@ -6,7 +6,7 @@ import {
     BridgeOperationStatusSuccess,
     BridgeProvider,
     BridgeProviderInformation,
-} from "../../domain/bridges/BridgeProvider";
+} from "../../../domain/bridges/BridgeProvider";
 
 export class MockBridgeProvider implements BridgeProvider {
     getAllPossibleOriginChainsToChain(
