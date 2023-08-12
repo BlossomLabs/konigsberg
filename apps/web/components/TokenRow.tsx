@@ -2,7 +2,7 @@ import { Button, Tr, Td, Image, HStack, Checkbox, Input, Text } from "@chakra-ui
 import { useEffect, useState } from "react";
 import { mainnet, useAccount, useBalance } from "wagmi";
 import { store } from "../services/stores/store";
-import hopBridgeQuote from "../services/hopBridgeQuote";
+import TransactionInfoPopover from "./TransactionInfoPopover";
 
 interface TokenRowProps {
     token: any,
