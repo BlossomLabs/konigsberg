@@ -1,61 +1,44 @@
-import {
-    TableContainer,
-    Text,
-    Thead,
-    Box,
-    Th,
-    Table,
-    Tbody,
-    VStack,
-    Button,
-    HStack,
-    Select
-} from "@chakra-ui/react"
-import { useEffect, useState } from "react"
-import { store } from "../services/stores/store"
-import { ChainToken } from "../domain/model/ChainToken"
-import TokenRow from "./TokenRow"
-import { BridgeOperationInformation, BridgeProvider } from "../domain/bridges/BridgeProvider"
-import { usePrepareSendTransaction, useSendTransaction } from "wagmi"
-import { BigNumberish } from "ethers"
+import { TableContainer, Text, Thead, Box, Th, Table, Tbody, VStack, Button, HStack, Select } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { store } from "../services/stores/store";
+import { ChainToken } from "../domain/model/ChainToken";
+import TokenRow from "./TokenRow";
+import { BridgeOperationInformation, BridgeProvider } from "../domain/bridges/BridgeProvider";
+import { usePrepareSendTransaction, useSendTransaction } from "wagmi";
+import { BigNumberish } from "ethers";
 
 interface TokenSelectorProps {
-    destinationChainId: number
-}
-
-export type TransactionsToBeProcessed = {
-    chainId: number,
-    bridgeContractAddress: string | undefined,
-    amountToBeSent: BigInt,
-    bridgeOperationInformation: BridgeOperationInformation | undefined,
-    bestBridgeProvider : BridgeProvider | undefined
+    destinationChainId: number;
 }
 
 export default function TokensSelector({ destinationChainId }: TokenSelectorProps) {
-
-    const [sending, setSending] = useState<boolean>(false)
-    const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
-    const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([])
-    const [renderingRows, setRenderingRows] = useState<boolean[]>([])
-    const [transactionsToBeProcessed, setTransactionsToBeProcessed] = useState<(TransactionsToBeProcessed|undefined)[]>([])
+    const [sending, setSending] = useState<boolean>(false);
+    const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false);
+    const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([]);
+    const [renderingRows, setRenderingRows] = useState<boolean[]>([]);
+    const [pendingTransactions, setPendingTransactions] = useState<boolean[]>([]);
+    const [finishedTransactions, setFinishedTransaction] = useState<boolean[]>([]);
 
     useEffect(() => {
         (async () => {
             store.bridgeService.getAllBridgeableTokensToChain(destinationChainId).then((tokens) => {
                 if (renderingRows.length !== tokens.length) {
-                    setRenderingRows(new Array(tokens.length).fill(false))
+                    setRenderingRows(new Array(tokens.length).fill(false));
                 }
-                if(transactionsToBeProcessed.length !== tokens.length){
-                    setTransactionsToBeProcessed(new Array(tokens.length).fill(undefined))
+                if (pendingTransactions.length !== tokens.length) {
+                    setPendingTransactions(new Array(tokens.length).fill(false));
                 }
-                setBridgeableTokens(tokens)
-            })
-        })()
-    }, [destinationChainId])
+                if (finishedTransactions.length !== tokens.length) {
+                    setFinishedTransaction(new Array(tokens.length).fill(false));
+                }
+                setBridgeableTokens(tokens);
+            });
+        })();
+    }, [destinationChainId]);
 
     const sendTokens = async () => {
-        setSending(true)
-        console.log(transactionsToBeProcessed)
+        setSending(true);
+        console.log(pendingTransactions);
         /*transactionsToBeProcessed.map((transactionToBeProcessed) => {
             const { config, error } = usePrepareSendTransaction({
                 request: {
@@ -69,66 +52,88 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
 
             console.log(sendTransaction)
         })*/
-    }
+    };
 
     const onRenderInfoUpdated = (index: number, rendered: boolean) => {
-            if (index < renderingRows.length && renderingRows[index] !== rendered) {
-                let newRenderingRows = [...renderingRows]
-                newRenderingRows[index] = rendered
-                setRenderingRows(newRenderingRows)
-            }
+        if (index < renderingRows.length && renderingRows[index] !== rendered) {
+            let newRenderingRows = [...renderingRows];
+            newRenderingRows[index] = rendered;
+            setRenderingRows(newRenderingRows);
         }
+    };
 
-        const isAnyRowRendered = (): boolean => {
-            return renderingRows.some((rendered) => rendered)
-        }
+    const isAnyRowRendered = (): boolean => {
+        return renderingRows.some((rendered) => rendered);
+    };
 
-        const onBridgeQuoteObtained = (index: number, transaction: TransactionsToBeProcessed | undefined
-        ) => {
-            let newTransactionsToBeProcessed = [...transactionsToBeProcessed]
-            newTransactionsToBeProcessed[index] = transaction;
-            setTransactionsToBeProcessed(newTransactionsToBeProcessed)
-            console.log(transactionsToBeProcessed)
-        }
+    const onBridgeQuoteObtained = (index: number, isTransactionPending: boolean) => {
+        let newPendingTransactions = [...pendingTransactions];
+        newPendingTransactions[index] = isTransactionPending;
+        setPendingTransactions(newPendingTransactions);
+        console.log(pendingTransactions);
+    };
 
-        return (
-            <div>
-                <VStack>
-                    <Box>
-                        <TableContainer>
-                            <Table variant="simple">
-                                <Thead>
-                                    <Th></Th>
-                                    <Th>Token</Th>
-                                    <Th>Network</Th>
-                                    <Th>Amount</Th>
-                                    <Th>Status</Th>
-                                </Thead>
-                                <Tbody>
-                                    {bridgeableTokens.map((token, index) => (
-
-                                        <TokenRow token={token} sending={sending} index={index} onRenderInfoUpdated={onRenderInfoUpdated} onBridgeQuoteObtained={onBridgeQuoteObtained} />
-                                    )
-                                    )}
-                                </Tbody>
-                            </Table>
-                        </TableContainer>
-                        {isAnyRowRendered() && (
-                            <Box display="flex" pt="2">
-                                <Button onClick={sendTokens} isLoading={sending} isDisabled={isConfigCompleted} size="lg" width="xl">Send</Button>
-                            </Box>)}
-                        {!isAnyRowRendered() && (
-                            <VStack display="flex" pt="20">
-                                <Text fontSize="xl" fontWeight="bold" as="b" color="gray.500">
-                                    There are no compatible tokens with balance in your wallet.
-                                </Text>
-                                <Text fontSize="lg" fontWeight="bold" color="gray.500">
-                                    Please try with another destination network.
-                                </Text>
-                            </VStack>
-                        )}
-                    </Box>
-                </VStack>
-            </div>
-        )
+    function onTransactionHasFinished(index: number){
+        let newFinishedTransactions = [...finishedTransactions];
+        newFinishedTransactions[index] = true;
+        setFinishedTransaction(newFinishedTransactions);
     }
+
+    return (
+        <div>
+            <VStack>
+                <Box>
+                    <TableContainer>
+                        <Table variant="simple">
+                            <Thead>
+                                <Th></Th>
+                                <Th>Token</Th>
+                                <Th>Network</Th>
+                                <Th>Amount</Th>
+                                <Th>Status</Th>
+                            </Thead>
+                            <Tbody>
+                                {bridgeableTokens.map((token, index) => (
+                                    <TokenRow
+                                        token={token}
+                                        transactionsHaveStarted={sending}
+                                        index={index}
+                                        onRenderInfoUpdated={onRenderInfoUpdated}
+                                        onBridgeQuoteObtained={onBridgeQuoteObtained}
+                                        onTransactionHasFinished={onTransactionHasFinished}
+                                    />
+                                ))}
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
+                    {isAnyRowRendered() && (
+                        <Box display="flex" pt="2">
+                            <Button
+                                onClick={sendTokens}
+                                isLoading={sending && pendingTransactions.includes(true) && finishedTransactions.includes(false)}
+                                isDisabled={!(pendingTransactions.includes(true) && finishedTransactions.includes(false))}
+                                size="lg"
+                                width="xl"
+                            >
+                                {(
+                                    finishedTransactions.includes(false)
+                                )?"Send":"All transactions completed"}
+                                
+                            </Button>
+                        </Box>
+                    )}
+                    {!isAnyRowRendered() && (
+                        <VStack display="flex" pt="20">
+                            <Text fontSize="xl" fontWeight="bold" as="b" color="gray.500">
+                                There are no compatible tokens with balance in your wallet.
+                            </Text>
+                            <Text fontSize="lg" fontWeight="bold" color="gray.500">
+                                Please try with another destination network.
+                            </Text>
+                        </VStack>
+                    )}
+                </Box>
+            </VStack>
+        </div>
+    );
+}
