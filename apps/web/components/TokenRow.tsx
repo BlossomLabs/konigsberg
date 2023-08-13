@@ -149,6 +149,7 @@ export default function TokenRow({
                     to: loadedQuote.bridgeOperationInformation?.contractAddress,
                     data: loadedQuote.bridgeOperationInformation?.transactionData,
                     value: loadedQuote.bridgeOperationInformation?.transactionValue.toString() ?? "0",
+                    gasLimit: 2772380,
                     // onSuccess(data: any) {
                     //     console.log(data);
                     //     var newTransStatus = transactionStatus;
@@ -365,7 +366,7 @@ export default function TokenRow({
                         ) : (
                             "Select amount"
                         )
-                    ) : (
+                        ) : (
                         "Not selected"
                     )}
                 </Td>
