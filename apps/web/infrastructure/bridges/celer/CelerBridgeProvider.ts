@@ -17,6 +17,9 @@ import { ethers } from "ethers";
 // import { WebClient } from "./sdk/ts-proto/gateway/GatewayServiceClientPb";
 
 export class CelerBridgeProvider implements BridgeProvider {
+    getUrlForTransactionHash(hash: string): string | undefined {
+        return "https://celerscan.com/tx/" + hash;
+    }
     // cBridgeTestnetEndpoint = "https://cbridge-v2-test.celer.network/v1/";
     // cBridgeEndpoint = "https://cbridge-prod2.celer.app/v1/";
     private api : CelerApi = new CelerApi();

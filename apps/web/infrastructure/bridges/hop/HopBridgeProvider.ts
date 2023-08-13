@@ -158,4 +158,8 @@ export class HopBridgeProvider implements BridgeProvider {
         const hopConfig: HopConfig = hopConfigJson;
         return hopConfig.contracts.map((v) => v.originChain).filter((c) => c != originChain);
     }
+
+    getUrlForTransactionHash(hash:string):string|undefined{
+        return "https://explorer.hop.exchange/?transferId="+hash;
+    }
 }

@@ -65,4 +65,5 @@ export interface BridgeProvider {
     getBridgeProviderInformation(): BridgeProviderInformation;
     getAllBridgeableTokensToChain(destinationChainId: number, originChainId?: number): Promise<ChainToken[]>;
     getAllPossibleOriginChainsToChain(destinationChainId: number, tokenAddress?: string|null): Promise<number[]>;
+    getUrlForTransactionHash(hash:string):string|undefined;
 }

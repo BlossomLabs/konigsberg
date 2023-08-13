@@ -6,6 +6,9 @@ import {
 import { ChainToken } from "../../../domain/model/ChainToken";
 
 export class Mock2BridgeProvider implements BridgeProvider {
+    getUrlForTransactionHash(hash: string): string | undefined {
+        throw new Error("Method not implemented.");
+    }
     allowedChains = [1, 10, 8453];
     async getBridgeProviderQuoteInformation(
         sourceChainId: number,

@@ -33,6 +33,8 @@ enum TransactionStatusEnum {
 class TransactionStatus {
     public status: TransactionStatusEnum = TransactionStatusEnum.NOT_STARTED;
     public hasError: boolean = false;
+    public hash : string |undefined = undefined;
+    public transactionUrl : string | undefined;
 }
 
 export type TransactionToBeProcessed = {
@@ -187,9 +189,13 @@ export default function TokenRow({
             switchNetworkAsync(token.chainId).then(() => {
                 return sendTransactionAsync();
             }).then((result: any)=> {
-                const hash = result.hash;
-                console.log(hash);
-                changeTransactionStatusEnum(TransactionStatusEnum.FINISHED);
+                console.log("result:", result);
+                var newTransStatus = new TransactionStatus();
+                newTransStatus.status = TransactionStatusEnum.FINISHED;
+                newTransStatus.hasError = false;
+                newTransStatus.hash = result.hash;
+                newTransStatus.transactionUrl = loadedQuote.bestBridgeProvider?.getUrlForTransactionHash(result.hash);
+                setTransactionStatus(newTransStatus);
             })
             .catch((error: any) => {
                 var newTransStatus = new TransactionStatus();
@@ -333,7 +339,7 @@ export default function TokenRow({
                     {selectedToken ? (
                         loadedQuote ? (
                             transactionStatus.status == TransactionStatusEnum.FINISHED ? (
-                                "Transaction Finished"
+                                <a href={transactionStatus.transactionUrl}>"Transaction Done"</a>
                             ) : transactionStatus.status == TransactionStatusEnum.IN_PROGRESS ? (
                                 <Spinner />
                             ) : (

@@ -7,6 +7,9 @@ import {
 import { ChainToken } from "../../../domain/model/ChainToken";
 
 export class ZoraBridgeProvider implements BridgeProvider {
+    getUrlForTransactionHash(hash: string): string | undefined {
+        return "https://etherscan.io/tx/"+hash;
+    }
 
     async getBridgeProviderQuoteInformation(
         sourceChainId: number,

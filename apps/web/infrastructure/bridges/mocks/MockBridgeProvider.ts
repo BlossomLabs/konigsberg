@@ -9,6 +9,9 @@ import {
 } from "../../../domain/bridges/BridgeProvider";
 
 export class MockBridgeProvider implements BridgeProvider {
+    getUrlForTransactionHash(hash: string): string | undefined {
+        throw new Error("Method not implemented.");
+    }
     getAllPossibleOriginChainsToChain(
         destinationChainId: number,
         tokenAddress?: string | undefined
