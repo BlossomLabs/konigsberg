@@ -5,20 +5,25 @@ import { store } from "../services/stores/store";
 import TransactionInfoPopover from "./TransactionInfoPopover";
 import { ChainToken } from "../domain/model/ChainToken";
 import { BridgeOperationInformation } from "../domain/bridges/BridgeProvider";
+import { TransactionsToBeProcessed } from "./TokensSelector";
 
 interface TokenRowProps {
     token: ChainToken,
     sending: boolean,
     index: number,
-    onRenderInfoUpdated: (index: number, rendered: boolean) => void
+    onRenderInfoUpdated: (index: number, rendered: boolean) => void,
+    onBridgeQuoteObtained: (
+        transactionsToBeProcessed: TransactionsToBeProcessed
+    ) => void
 }
+
 
 enum BestBridgeProviderType {
     BEST_TIME,
     BEST_RETURN,
 }
 
-export default function TokenRow({ token, sending, index, onRenderInfoUpdated }: TokenRowProps) {
+export default function TokenRow({ token, sending, index, onRenderInfoUpdated, onBridgeQuoteObtained }: TokenRowProps) {
 
     const [selectedToken, setSelectedToken] = useState<boolean>(false);
     const [chainName, setChainName] = useState<string>("");
@@ -91,9 +96,6 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
                 String(address),
                 transferPreference,
             ).then((bridgeProvider) => {
-                console.log("hi")
-                console.log(JSON.stringify(bridgeProvider?.getBridgeProviderInformation()));
-
                 bridgeProvider?.getBridgeProviderQuoteInformation(token.chainId,
                     token.contractAddress,
                     store.UserBridgeOperation.operationConfig.destinationChainId,
@@ -101,11 +103,21 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated }:
                     store.UserBridgeOperation.operationConfig.slippage,
                     String(address)
                 ).then((quoteInfo: BridgeOperationInformation | undefined) => {
-                    console.log(quoteInfo);
                     // TODO: use following parameters to call contract
                     // quoteInfo?.contractAddress
                     // quoteInfo?.transactionValue
                     // quoteInfo?.transactionData
+                    let transactionsToBeProcessed = {
+                        chainId: token.chainId,
+                        tokenContractAddress: token.contractAddress,
+                        destinationChainId: store.UserBridgeOperation.operationConfig.destinationChainId,
+                        amount: BigInt(bigIntAmount),
+                        slippage: store.UserBridgeOperation.operationConfig.slippage,
+                        userAddress: String(address),
+                        quote: quoteInfo
+                    }
+                    onBridgeQuoteObtained(transactionsToBeProcessed)
+                    // TO DO SEND INFO TO TX INFO POPOVER
                 });
             })
         }

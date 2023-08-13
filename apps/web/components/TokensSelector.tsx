@@ -15,9 +15,26 @@ import { useEffect, useState } from "react"
 import { store } from "../services/stores/store"
 import { ChainToken } from "../domain/model/ChainToken"
 import TokenRow from "./TokenRow"
+import { BridgeOperationInformation } from "../domain/bridges/BridgeProvider"
 
 interface TokenSelectorProps {
-    destinationChainId: number
+    chainId: number,
+    tokenContractAddress: string | null,
+    destinationChainId: number,
+    amount: BigInt,
+    slippage: number,
+    userAddress: string,
+    quote: BridgeOperationInformation | undefined
+}
+
+export type TransactionsToBeProcessed = {
+    chainId: number,
+    tokenContractAddress: string | null,
+    destinationChainId: number,
+    amount: BigInt,
+    slippage: number,
+    userAddress: string,
+    quote: BridgeOperationInformation | undefined
 }
 
 export default function TokensSelector({ destinationChainId }: TokenSelectorProps) {
@@ -26,6 +43,7 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
     const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
     const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([])
     const [renderingRows, setRenderingRows] = useState<boolean[]>([])
+    const [transactionsToBeProcessed, setTransactionsToBeProcessed] = useState<TransactionsToBeProcessed[]>([])
 
     useEffect(() => {
         (async () => {
@@ -55,7 +73,28 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
         return renderingRows.some((rendered) => rendered)
     }
 
-    console.log(bridgeableTokens)
+    const onBridgeQuoteObtained = ({ chainId,
+        tokenContractAddress,
+        destinationChainId,
+        amount,
+        slippage,
+        userAddress,
+        quote 
+    }: TransactionsToBeProcessed
+    ) => {
+        let newTransactionsToBeProcessed = [...transactionsToBeProcessed]
+        newTransactionsToBeProcessed.push({
+            chainId,
+            tokenContractAddress,
+            destinationChainId,
+            amount,
+            slippage,
+            userAddress,
+            quote
+        })
+        setTransactionsToBeProcessed(newTransactionsToBeProcessed)
+        console.log(transactionsToBeProcessed)
+    }
 
     return (
         <div>
@@ -73,7 +112,7 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
                             <Tbody>
                                 {bridgeableTokens.map((token, index) => (
 
-                                    <TokenRow token={token} sending={sending} index={index} onRenderInfoUpdated={onRenderInfoUpdated} />
+                                    <TokenRow token={token} sending={sending} index={index} onRenderInfoUpdated={onRenderInfoUpdated} onBridgeQuoteObtained={onBridgeQuoteObtained} />
                                 )
                                 )}
                             </Tbody>
