@@ -109,13 +109,11 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
                     // quoteInfo?.transactionData
                     let transactionsToBeProcessed = {
                         chainId: token.chainId,
-                        tokenContractAddress: token.contractAddress,
-                        destinationChainId: store.UserBridgeOperation.operationConfig.destinationChainId,
-                        amount: BigInt(bigIntAmount),
-                        slippage: store.UserBridgeOperation.operationConfig.slippage,
-                        userAddress: String(address),
-                        quote: quoteInfo
+                        bridgeContractAddress: quoteInfo?.contractAddress,
+                        amountToBeSent: BigInt(bigIntAmount),
+                        bestBridgeProvider: quoteInfo
                     }
+                    
                     onBridgeQuoteObtained(transactionsToBeProcessed)
                     // TO DO SEND INFO TO TX INFO POPOVER
                 });
