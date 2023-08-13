@@ -50,6 +50,7 @@ export class BridgeService {
             if (firstTokenForChainAndContractAddress == undefined) return false;
             return self.indexOf(firstTokenForChainAndContractAddress) == index;
         });
+        console.log("bridgeable tokens", allTokens)
         return allTokens;
     };
 
@@ -83,6 +84,7 @@ export class BridgeService {
         );
 
         var uniqueChains = allChainsLists.flat().filter((e, index, self) => self.indexOf(e) == index);
+        console.log("uniqueChains", uniqueChains);
         return uniqueChains;
     };
 

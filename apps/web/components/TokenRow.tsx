@@ -72,11 +72,8 @@ export default function TokenRow({
         token: token.contractAddress as `0x${string}`,
     });
 
-    console.log("prepare send trans, ", prepareSendTransaction);
     const { config, error } = usePrepareSendTransaction(prepareSendTransaction);
-    console.log("config, ", config);
-    console.log("error ", error);
-    const { sendTransaction } = useSendTransaction(config);
+    const { sendTransactionAsync } = useSendTransaction(config);
     const { chains, error: chainError, isLoading: chainIsLoading, pendingChainId, switchNetworkAsync } = useSwitchNetwork();
 
     // create an empty function to determine chainname from chainid
@@ -184,18 +181,24 @@ export default function TokenRow({
 
         console.log("prepare transaction");
         // we have to start the transaction
-        console.log(config);
 
-        if (switchNetworkAsync && sendTransaction) {
-
+        if (switchNetworkAsync && sendTransactionAsync) {
+            
             switchNetworkAsync(token.chainId).then(() => {
-                sendTransaction();
-            }).catch((error: any) => {
+                return sendTransactionAsync();
+            }).then((result: any)=> {
+                const hash = result.hash;
+                console.log(hash);
+                changeTransactionStatusEnum(TransactionStatusEnum.FINISHED);
+            })
+            .catch((error: any) => {
                 var newTransStatus = new TransactionStatus();
                 newTransStatus.status = TransactionStatusEnum.FINISHED;
                 newTransStatus.hasError = true;
                 setTransactionStatus(newTransStatus);
             });
+
+
         }
     }
 

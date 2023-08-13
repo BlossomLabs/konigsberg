@@ -4,7 +4,6 @@ import { store } from "../services/stores/store";
 import { ChainToken } from "../domain/model/ChainToken";
 import TokenRow from "./TokenRow";
 import { BridgeOperationInformation, BridgeProvider } from "../domain/bridges/BridgeProvider";
-import { usePrepareSendTransaction, useSendTransaction } from "wagmi";
 import { BigNumberish } from "ethers";
 
 interface TokenSelectorProps {
@@ -18,6 +17,7 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
     const [renderingRows, setRenderingRows] = useState<boolean[]>([]);
     const [pendingTransactions, setPendingTransactions] = useState<boolean[]>([]);
     const [finishedTransactions, setFinishedTransaction] = useState<boolean[]>([]);
+    const [sendingIndex, setSendingIndex] = useState<number>(-1);
 
     useEffect(() => {
         (async () => {
@@ -38,20 +38,8 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
 
     const sendTokens = async () => {
         setSending(true);
+        setSendingIndex(sendingIndex+1);
         console.log(pendingTransactions);
-        /*transactionsToBeProcessed.map((transactionToBeProcessed) => {
-            const { config, error } = usePrepareSendTransaction({
-                request: {
-                    to: transactionToBeProcessed.quote?.contractAddress as string,
-                    value: transactionToBeProcessed.quote?.transactionValue as BigNumberish,
-                    data: transactionToBeProcessed.quote?.transactionData as string
-                },
-            })
-
-            const { sendTransaction } = useSendTransaction(config)
-
-            console.log(sendTransaction)
-        })*/
     };
 
     const onRenderInfoUpdated = (index: number, rendered: boolean) => {
@@ -77,6 +65,7 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
         let newFinishedTransactions = [...finishedTransactions];
         newFinishedTransactions[index] = true;
         setFinishedTransaction(newFinishedTransactions);
+        setSendingIndex(newFinishedTransactions.findIndex(e=> e == false));
     }
 
     return (
@@ -95,8 +84,9 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
                             <Tbody>
                                 {bridgeableTokens.map((token, index) => (
                                     <TokenRow
+                                        key={token.chainId+":"+token.contractAddress}
                                         token={token}
-                                        transactionsHaveStarted={sending}
+                                        transactionsHaveStarted={sending && sendingIndex == index}
                                         index={index}
                                         onRenderInfoUpdated={onRenderInfoUpdated}
                                         onBridgeQuoteObtained={onBridgeQuoteObtained}

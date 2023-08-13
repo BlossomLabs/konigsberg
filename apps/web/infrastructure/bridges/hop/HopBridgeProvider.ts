@@ -55,6 +55,7 @@ export class HopBridgeProvider implements BridgeProvider {
                 quoteResponse
             );
             const transactionValue = contractInfo?.originToken == "ETH" ? BigInt(quoteResponse.amountIn) : BigInt(0);
+            console.log("transaction value", transactionValue)
 
             if (!contractInfo?.bridgeAddress) {
                 console.error("Error: Missing bridge address");
@@ -140,7 +141,7 @@ export class HopBridgeProvider implements BridgeProvider {
             ]);
         } else {
             data = iface.encodeFunctionData("swapAndSend", [
-                sourceChainId,
+                destinationChainId,
                 recipientAddress,
                 BigInt(quoteData.amountIn),
                 BigInt(quoteData.bonderFee),
