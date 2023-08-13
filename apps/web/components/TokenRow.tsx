@@ -13,7 +13,8 @@ interface TokenRowProps {
     index: number,
     onRenderInfoUpdated: (index: number, rendered: boolean) => void,
     onBridgeQuoteObtained: (
-        transactionsToBeProcessed: TransactionsToBeProcessed
+        rowIndex: number,
+        transactionsToBeProcessed: TransactionsToBeProcessed | undefined
     ) => void
 }
 
@@ -59,6 +60,12 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
                 case 42161:
                     setChainName("Arbitrum")
                     break;
+                case 8564:
+                    setChainName("Base")
+                    break;
+                case 7777777:
+                    setChainName("Zora")
+                    break;
                 default:
                     setChainName("Unknown")
                     break;
@@ -67,20 +74,15 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
         getChainName();
     }, [])
 
+    function transactionInfoUpdate(estimatedFee: BigInt|undefined, estimatedReturn: BigInt|undefined, bridgeName:string|undefined, pendingTransaction:TransactionsToBeProcessed|undefined) {
+        setEstimatedFee(estimatedFee)
+        setEstimatedReturn(estimatedReturn)
+        setBridgeName(bridgeName)
+        onBridgeQuoteObtained(index, pendingTransaction);
+    }
+
     useEffect(() => {
-
-        let targetChainName: string = "";
         let transferPreference: BestBridgeProviderType;
-
-        if (store.UserBridgeOperation.operationConfig.destinationChainId === 1) {
-            targetChainName = "ethereum"
-        } else if (store.UserBridgeOperation.operationConfig.destinationChainId === 10) {
-            targetChainName = "optimism"
-        } else if (store.UserBridgeOperation.operationConfig.destinationChainId === 42161) {
-            targetChainName = "arbitrum"
-        } else if (store.UserBridgeOperation.operationConfig.destinationChainId === 137) {
-            targetChainName = "polygon"
-        }
 
         if (store.UserBridgeOperation.operationConfig.transferPreference === "Maximum return") {
             transferPreference = BestBridgeProviderType.BEST_RETURN
@@ -101,37 +103,39 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
                 String(address),
                 transferPreference,
             ).then((bridgeProvider) => {
-                bridgeProvider?.getBridgeProviderQuoteInformation(token.chainId,
+                if(bridgeProvider == undefined){
+                    transactionInfoUpdate(undefined, undefined, undefined, undefined);
+                    return;
+                }
+                bridgeProvider.getBridgeProviderQuoteInformation(token.chainId,
                     token.contractAddress,
                     store.UserBridgeOperation.operationConfig.destinationChainId,
                     BigInt(bigIntAmount),
                     store.UserBridgeOperation.operationConfig.slippage,
                     String(address)
                 ).then((quoteInfo: BridgeOperationInformation | undefined) => {
-                    // TODO: use following parameters to call contract
-                    // quoteInfo?.contractAddress
-                    // quoteInfo?.transactionValue
-                    // quoteInfo?.transactionData
-                    let transactionsToBeProcessed = {
-                        chainId: token.chainId,
-                        bridgeContractAddress: quoteInfo?.contractAddress,
-                        amountToBeSent: BigInt(bigIntAmount),
-                        bestBridgeProvider: quoteInfo
+                    if(quoteInfo == undefined){
+                        transactionInfoUpdate(undefined, undefined, undefined, undefined);
+                        return;
                     }
-
-                    onBridgeQuoteObtained(transactionsToBeProcessed)
-
-                    setEstimatedFee(quoteInfo?.estimatedFee)
-                    setEstimatedReturn(quoteInfo?.estimatedAmount)
-                    setBridgeName(bridgeProvider.getBridgeProviderInformation().name)
+                    let transactionsToBeProcessed : TransactionsToBeProcessed = {
+                        chainId: token.chainId,
+                        bridgeContractAddress: quoteInfo.contractAddress,
+                        amountToBeSent: BigInt(bigIntAmount),
+                        bestBridgeProvider : bridgeProvider,
+                        bridgeOperationInformation: quoteInfo
+                    }
+                    transactionInfoUpdate(quoteInfo?.estimatedFee, quoteInfo?.estimatedAmount, bridgeProvider.getBridgeProviderInformation().name, transactionsToBeProcessed);
 
                     setLoadedQuote(true);
                 });
             })
+        } else {
+            transactionInfoUpdate(undefined, undefined, undefined, undefined);
         }
     }, [selectedToken, amountToBeSent])
 
-    if (!balance.data?.formatted || balance.data?.formatted === "0.0" || chainName === "Unknown") {
+    if (!balance.data?.formatted || balance.data?.formatted === "0.0" || store.UserBridgeOperation.operationConfig.destinationChainId == undefined) {
 
         onRenderInfoUpdated(index, false);
 

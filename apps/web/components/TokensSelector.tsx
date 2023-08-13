@@ -15,25 +15,20 @@ import { useEffect, useState } from "react"
 import { store } from "../services/stores/store"
 import { ChainToken } from "../domain/model/ChainToken"
 import TokenRow from "./TokenRow"
-import { BridgeOperationInformation } from "../domain/bridges/BridgeProvider"
+import { BridgeOperationInformation, BridgeProvider } from "../domain/bridges/BridgeProvider"
 import { usePrepareSendTransaction, useSendTransaction } from "wagmi"
 import { BigNumberish } from "ethers"
 
 interface TokenSelectorProps {
-    chainId: number,
-    tokenContractAddress: string | null,
-    destinationChainId: number,
-    amount: BigInt,
-    slippage: number,
-    userAddress: string,
-    quote: BridgeOperationInformation | undefined
+    destinationChainId: number
 }
 
 export type TransactionsToBeProcessed = {
     chainId: number,
     bridgeContractAddress: string | undefined,
     amountToBeSent: BigInt,
-    bestBridgeProvider: BridgeOperationInformation | undefined
+    bridgeOperationInformation: BridgeOperationInformation | undefined,
+    bestBridgeProvider : BridgeProvider | undefined
 }
 
 export default function TokensSelector({ destinationChainId }: TokenSelectorProps) {
@@ -42,13 +37,16 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
     const [isConfigCompleted, setIsConfigCompleted] = useState<boolean>(false)
     const [bridgeableTokens, setBridgeableTokens] = useState<ChainToken[]>([])
     const [renderingRows, setRenderingRows] = useState<boolean[]>([])
-    const [transactionsToBeProcessed, setTransactionsToBeProcessed] = useState<TransactionsToBeProcessed[]>([])
+    const [transactionsToBeProcessed, setTransactionsToBeProcessed] = useState<(TransactionsToBeProcessed|undefined)[]>([])
 
     useEffect(() => {
         (async () => {
             store.bridgeService.getAllBridgeableTokensToChain(destinationChainId).then((tokens) => {
                 if (renderingRows.length !== tokens.length) {
                     setRenderingRows(new Array(tokens.length).fill(false))
+                }
+                if(transactionsToBeProcessed.length !== tokens.length){
+                    setTransactionsToBeProcessed(new Array(tokens.length).fill(undefined))
                 }
                 setBridgeableTokens(tokens)
             })
@@ -85,20 +83,10 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
             return renderingRows.some((rendered) => rendered)
         }
 
-        const onBridgeQuoteObtained = ({ 
-            chainId,
-            bridgeContractAddress,
-            amountToBeSent,
-            bestBridgeProvider
-        }: TransactionsToBeProcessed
+        const onBridgeQuoteObtained = (index: number, transaction: TransactionsToBeProcessed | undefined
         ) => {
             let newTransactionsToBeProcessed = [...transactionsToBeProcessed]
-            newTransactionsToBeProcessed.push({
-                chainId,
-                bridgeContractAddress,
-                amountToBeSent,
-                bestBridgeProvider
-            })
+            newTransactionsToBeProcessed[index] = transaction;
             setTransactionsToBeProcessed(newTransactionsToBeProcessed)
             console.log(transactionsToBeProcessed)
         }
