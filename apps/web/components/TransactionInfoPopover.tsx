@@ -11,7 +11,13 @@ import {
 } from '@chakra-ui/react'
 import { store } from '../services/stores/store'
 
-export default function TransactionInfoPopover() {
+interface TransactionInfoPopoverProps {
+    estimatedFee: BigInt | undefined, 
+    estimatedReturn: BigInt | undefined, 
+    bridgeName: string | undefined
+}
+
+export default function TransactionInfoPopover({estimatedFee, estimatedReturn, bridgeName}: TransactionInfoPopoverProps) {
 
     return (
         <Popover>
@@ -23,11 +29,12 @@ export default function TransactionInfoPopover() {
                 <PopoverCloseButton />
                 <PopoverHeader>Transaction details</PopoverHeader>
                 <PopoverBody>
-                    <Text>Estimated return: </Text>
-                    <Text>Estimated fee: </Text>
-                    <Text>Bridge name: </Text>
+                    <Text>Estimated return: {Number(estimatedReturn)}</Text>
+                    <Text>Estimated fee: {Number(estimatedFee)}</Text>
+                    <Text>Bridge name: {bridgeName}</Text>
                 </PopoverBody>
             </PopoverContent>
         </Popover>
     )
+
 }

@@ -30,6 +30,11 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
     const [amountToBeSent, setAmountToBeSent] = useState<string>("");
     const [quote, setQuote] = useState<any>(null);
 
+    const [estimatedReturn, setEstimatedReturn] = useState<BigInt>();
+    const [estimatedFee, setEstimatedFee] = useState<BigInt>();
+    const [bridgeName, setBridgeName] = useState<string>();
+    const [loadedQuote, setLoadedQuote] = useState<boolean>(false);
+
     const { address } = useAccount();
 
     const balance = useBalance({
@@ -77,7 +82,7 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
             targetChainName = "polygon"
         }
 
-        if(store.UserBridgeOperation.operationConfig.transferPreference === "Maximum return") {
+        if (store.UserBridgeOperation.operationConfig.transferPreference === "Maximum return") {
             transferPreference = BestBridgeProviderType.BEST_RETURN
         } else {
             transferPreference = BestBridgeProviderType.BEST_TIME
@@ -86,7 +91,7 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
         if (selectedToken && Number(amountToBeSent) > 0) {
             // TODO: call BridgeService getBestBridgeProviderForBridging and, after having a BridgeProvider, call getBridgeProviderQuoteInformation
             // with getBridgeProviderQuoteInformation, do the transaction
-            const bigIntAmount = Number(amountToBeSent) * Math.pow(10,token.nDecimals);
+            const bigIntAmount = Number(amountToBeSent) * Math.pow(10, token.nDecimals);
             store.bridgeService.getBestBridgeProviderForBridging(
                 token.chainId,
                 token.contractAddress,
@@ -113,9 +118,14 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
                         amountToBeSent: BigInt(bigIntAmount),
                         bestBridgeProvider: quoteInfo
                     }
-                    
+
                     onBridgeQuoteObtained(transactionsToBeProcessed)
-                    // TO DO SEND INFO TO TX INFO POPOVER
+
+                    setEstimatedFee(quoteInfo?.estimatedFee)
+                    setEstimatedReturn(quoteInfo?.estimatedAmount)
+                    setBridgeName(bridgeProvider.getBridgeProviderInformation().name)
+
+                    setLoadedQuote(true);
                 });
             })
         }
@@ -161,12 +171,17 @@ export default function TokenRow({ token, sending, index, onRenderInfoUpdated, o
                             store.UserBridgeOperation.addOperationToken(token.symbol, token.chainId, Number(e.target.value))
                         }} isDisabled={sending} /> : String(balance.data?.formatted)}
                 </Td>
-                <Td>{selectedToken && quote ? (
-                    <>
-                        <TransactionInfoPopover />
-                        <Button>Send</Button>
-                    </>) : "Not selected"}</Td>
-                {/*Add amount to be received, fee, bridge to be used. Selector to select among bridges. */}
+                <Td>
+                    {selectedToken ? (
+                        loadedQuote ? (
+                            <TransactionInfoPopover estimatedFee={estimatedFee} estimatedReturn={estimatedReturn} bridgeName={bridgeName} />
+                        ) : (
+                            "Loading..."
+                        )
+                    ) : (
+                        "Not selected"
+                    )}
+                </Td>
             </Tr>
         )
     }
