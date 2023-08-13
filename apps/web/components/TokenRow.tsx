@@ -95,7 +95,7 @@ export default function TokenRow({
                 case 42161:
                     setChainName("Arbitrum");
                     break;
-                case 8564:
+                case 8453:
                     setChainName("Base");
                     break;
                 case 7777777:

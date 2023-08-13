@@ -6,7 +6,7 @@ import {
 import { ChainToken } from "../../../domain/model/ChainToken";
 
 export class Mock2BridgeProvider implements BridgeProvider {
-    allowedChains = [1, 10, 8564];
+    allowedChains = [1, 10, 8453];
     async getBridgeProviderQuoteInformation(
         sourceChainId: number,
         sourceTokenAddress: string | null,
@@ -54,12 +54,12 @@ export class Mock2BridgeProvider implements BridgeProvider {
     ): Promise<ChainToken[]> {
         var originChains: number[] = [];
         if (originChainId != undefined) {
-            if (originChainId != 1 && originChainId != 10 && originChainId != 8564) return [];
+            if (originChainId != 1 && originChainId != 10 && originChainId != 8453) return [];
             originChains = [originChainId];
         } else {
-            if (destinationChainId == 1) originChains = [10, 8564];
-            if (destinationChainId == 10) originChains = [1, 8564];
-            if (destinationChainId == 8564) originChains = [1, 10];
+            if (destinationChainId == 1) originChains = [10, 8453];
+            if (destinationChainId == 10) originChains = [1, 8453];
+            if (destinationChainId == 8453) originChains = [1, 10];
         }
         return originChains.map(
             (d) => new ChainToken(d, null, "ETH", 18, "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png")
@@ -72,9 +72,9 @@ export class Mock2BridgeProvider implements BridgeProvider {
         // case we are asking for no eth
         if (tokenAddress != undefined && tokenAddress != null) return [];
 
-        if (destinationChainId == 1) return [10, 8564];
-        if (destinationChainId == 10) return [1, 8564];
-        if (destinationChainId == 8564) return [1, 10];
+        if (destinationChainId == 1) return [10, 8453];
+        if (destinationChainId == 10) return [1, 8453];
+        if (destinationChainId == 8453) return [1, 10];
 
         return [];
     }

@@ -32,7 +32,7 @@ export default function OperationConfig({onUserConfigOperationChanged}: Operatio
                 >
                     <option value="1">Ethereum</option>
                     <option value="10">Optimism</option>
-                    <option value="8564">Base</option>
+                    <option value="8453">Base</option>
                     <option value="7777777">Zora</option>
                 </Select>
             </Box>

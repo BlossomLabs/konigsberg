@@ -22,7 +22,7 @@ describe('Bridge Service', () => {
         expect(result[0].nDecimals).toEqual(18);
         expect(result[0].symbol).toEqual("ETH");
         // base
-        expect(result[1].chainId).toEqual(8564);
+        expect(result[1].chainId).toEqual(8453);
         expect(result[1].contractAddress).toBeNull();
         expect(result[1].nDecimals).toEqual(18);
         expect(result[1].symbol).toEqual("ETH");
@@ -30,19 +30,19 @@ describe('Bridge Service', () => {
     it('getCompatibleOriginChains', async () => {
         // for destination mainnet, both optimism and base (only for eth)
         var result : number[] = await mockBridgeService.getCompatibleOriginChains(1, null);
-        expect(result).toEqual([10, 8564])
+        expect(result).toEqual([10, 8453])
         result = await mockBridgeService.getCompatibleOriginChains(1, "0x4200000000000000000000000000000000000042"); // OP
         expect(result).toEqual([])
 
         // for destination optimism, both mainnet and base
         result = await mockBridgeService.getCompatibleOriginChains(10, null);
-        expect(result).toEqual([1, 8564])
+        expect(result).toEqual([1, 8453])
         result = await mockBridgeService.getCompatibleOriginChains(10, "0x4200000000000000000000000000000000000042"); // OP
         expect(result).toEqual([])
         // for destination base, both mainnet and optimism
-        result = await mockBridgeService.getCompatibleOriginChains(8564, null);
+        result = await mockBridgeService.getCompatibleOriginChains(8453, null);
         expect(result).toEqual([1, 10])
-        result = await mockBridgeService.getCompatibleOriginChains(8564, "0x4200000000000000000000000000000000000042"); // OP
+        result = await mockBridgeService.getCompatibleOriginChains(8453, "0x4200000000000000000000000000000000000042"); // OP
         expect(result).toEqual([])
 
         // for destination random, none
@@ -56,7 +56,7 @@ describe('Bridge Service', () => {
         // in our test, bridge1 supports chains 1 and 10
         // best time from mainnet and best amount from others
 
-        // bridge 2 supports chains 1, 10 and 8564
+        // bridge 2 supports chains 1, 10 and 8453
         // best amount from mainnet and best time from others
 
         /*********************************
@@ -109,7 +109,7 @@ describe('Bridge Service', () => {
        result =  await mockBridgeService.getBestBridgeProviderForBridging(
             1,
             null,
-            8564,
+            8453,
             BigInt(4000),
             0.5,
             "0x0000000000000000000000000000000000000000",
@@ -119,7 +119,7 @@ describe('Bridge Service', () => {
         result = await mockBridgeService.getBestBridgeProviderForBridging(
             1,
             null,
-            8564,
+            8453,
             BigInt(4000),
             0.5,
             "0x0000000000000000000000000000000000000000",
@@ -127,7 +127,7 @@ describe('Bridge Service', () => {
         );
         expect(result?.getBridgeProviderInformation().id).toEqual("mock2");
         result = await mockBridgeService.getBestBridgeProviderForBridging(
-            8564,
+            8453,
             null,
             1,
             BigInt(4000),
@@ -137,7 +137,7 @@ describe('Bridge Service', () => {
         );
         expect(result?.getBridgeProviderInformation().id).toEqual("mock2");
         result = await mockBridgeService.getBestBridgeProviderForBridging(
-            8564,
+            8453,
             null,
             1,
             BigInt(4000),
@@ -153,7 +153,7 @@ describe('Bridge Service', () => {
         result =  await mockBridgeService.getBestBridgeProviderForBridging(
             2,
             null,
-            8564,
+            8453,
             BigInt(4000),
             0.5,
             "0x0000000000000000000000000000000000000000",
@@ -163,7 +163,7 @@ describe('Bridge Service', () => {
         result = await mockBridgeService.getBestBridgeProviderForBridging(
             2,
             null,
-            8564,
+            8453,
             BigInt(4000),
             0.5,
             "0x0000000000000000000000000000000000000000",
@@ -171,7 +171,7 @@ describe('Bridge Service', () => {
         );
         expect(result).toBeUndefined();
         result = await mockBridgeService.getBestBridgeProviderForBridging(
-            8564,
+            8453,
             null,
             2,
             BigInt(4000),
@@ -181,7 +181,7 @@ describe('Bridge Service', () => {
         );
         expect(result).toBeUndefined();
         result = await mockBridgeService.getBestBridgeProviderForBridging(
-            8564,
+            8453,
             null,
             2,
             BigInt(4000),
