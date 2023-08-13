@@ -196,11 +196,12 @@ export default function TokenRow({
                 return result.wait();
             }).then((result: any) => {
                 console.log("result:", result);
+                console.log("hash", result.transactionHash);
                 var newTransStatus = new TransactionStatus();
                 newTransStatus.status = TransactionStatusEnum.FINISHED;
                 newTransStatus.hasError = false;
-                newTransStatus.hash = result.hash;
-                newTransStatus.transactionUrl = loadedQuote.bestBridgeProvider?.getUrlForTransactionHash(result.hash);
+                newTransStatus.hash = result.transactionHash;
+                newTransStatus.transactionUrl = loadedQuote.bestBridgeProvider?.getUrlForTransactionHash(result.transactionHash);
                 setTransactionStatus(newTransStatus);
             })
             .catch((error: any) => {
@@ -349,7 +350,7 @@ export default function TokenRow({
                         loadedQuote ? (
                             transactionStatus.status == TransactionStatusEnum.FINISHED ? (
                                 transactionStatus.hasError?"Error":
-                                <a href={transactionStatus.transactionUrl}>Transaction Done</a>
+                                <a href={transactionStatus.transactionUrl} target="_blank">Transaction Done</a>
                             ) : transactionStatus.status == TransactionStatusEnum.IN_PROGRESS ? (
                                 <Spinner />
                             ) : (
