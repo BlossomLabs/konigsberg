@@ -78,7 +78,9 @@ export default function TokenRow({
 
     const { config, error } = usePrepareSendTransaction(prepareSendTransaction);
     const { sendTransactionAsync } = useSendTransaction(config);
-    const { chains, error: chainError, isLoading: chainIsLoading, pendingChainId, switchNetworkAsync } = useSwitchNetwork();
+    const { chains, error: chainError, isLoading: chainIsLoading, pendingChainId, switchNetworkAsync } = useSwitchNetwork({
+        throwForSwitchChainNotSupported: true,
+    });
 
     // create an empty function to determine chainname from chainid
     useEffect(() => {
@@ -191,6 +193,8 @@ export default function TokenRow({
             switchNetworkAsync(token.chainId).then(() => {
                 return sendTransactionAsync();
             }).then((result: any)=> {
+                return result.wait();
+            }).then((result: any) => {
                 console.log("result:", result);
                 var newTransStatus = new TransactionStatus();
                 newTransStatus.status = TransactionStatusEnum.FINISHED;
