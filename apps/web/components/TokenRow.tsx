@@ -1,6 +1,6 @@
 import { Button, Tr, Td, Image, HStack, Checkbox, Input, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { mainnet, useAccount, useBalance } from "wagmi";
+import { mainnet, useAccount, useBalance, useSwitchNetwork } from "wagmi";
 import { store } from "../services/stores/store";
 import TransactionInfoPopover from "./TransactionInfoPopover";
 import { ChainToken } from "../domain/model/ChainToken";
@@ -77,6 +77,7 @@ export default function TokenRow({
     console.log("config, ", config);
     console.log("error ", error);
     const { sendTransaction } = useSendTransaction(config);
+    const { chains, error: chainError, isLoading: chainIsLoading, pendingChainId, switchNetworkAsync } = useSwitchNetwork();
 
     // create an empty function to determine chainname from chainid
     useEffect(() => {
@@ -144,7 +145,7 @@ export default function TokenRow({
                 request: {
                     to: loadedQuote.bridgeOperationInformation?.contractAddress,
                     data: loadedQuote.bridgeOperationInformation?.transactionData,
-                    value: parseEther(loadedQuote.bridgeOperationInformation?.transactionValue.toString() ?? "0"),
+                    value: loadedQuote.bridgeOperationInformation?.transactionValue.toString() ?? "0",
                     // onSuccess(data: any) {
                     //     console.log(data);
                     //     var newTransStatus = transactionStatus;
@@ -184,7 +185,18 @@ export default function TokenRow({
         console.log("prepare transaction");
         // we have to start the transaction
         console.log(config);
-        if (sendTransaction != undefined) sendTransaction();
+
+        if (switchNetworkAsync && sendTransaction) {
+
+            switchNetworkAsync(token.chainId).then(() => {
+                sendTransaction();
+            }).catch((error: any) => {
+                var newTransStatus = new TransactionStatus();
+                newTransStatus.status = TransactionStatusEnum.FINISHED;
+                newTransStatus.hasError = true;
+                setTransactionStatus(newTransStatus);
+            });
+        }
     }
 
     useEffect(() => {
