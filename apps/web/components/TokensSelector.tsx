@@ -91,6 +91,7 @@ export default function TokensSelector({ destinationChainId }: TokenSelectorProp
                                         onRenderInfoUpdated={onRenderInfoUpdated}
                                         onBridgeQuoteObtained={onBridgeQuoteObtained}
                                         onTransactionHasFinished={onTransactionHasFinished}
+                                        blockRow={sending}
                                     />
                                 ))}
                             </Tbody>

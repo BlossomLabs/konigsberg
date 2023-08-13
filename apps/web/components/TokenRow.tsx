@@ -16,6 +16,7 @@ interface TokenRowProps {
     onBridgeQuoteObtained: (rowIndex: number, transactionsToBeProcessed: boolean) => void;
     transactionsHaveStarted: boolean;
     onTransactionHasFinished: (index: number) => void;
+    blockRow : boolean
 }
 
 enum BestBridgeProviderType {
@@ -52,6 +53,7 @@ export default function TokenRow({
     onBridgeQuoteObtained,
     transactionsHaveStarted,
     onTransactionHasFinished,
+    blockRow
 }: TokenRowProps) {
     const [selectedToken, setSelectedToken] = useState<boolean>(false);
     const [chainName, setChainName] = useState<string>("");
@@ -183,9 +185,9 @@ export default function TokenRow({
 
         console.log("prepare transaction");
         // we have to start the transaction
-
+        console.log(switchNetworkAsync)
+        console.log(sendTransactionAsync)
         if (switchNetworkAsync && sendTransactionAsync) {
-            
             switchNetworkAsync(token.chainId).then(() => {
                 return sendTransactionAsync();
             }).then((result: any)=> {
@@ -203,8 +205,11 @@ export default function TokenRow({
                 newTransStatus.hasError = true;
                 setTransactionStatus(newTransStatus);
             });
-
-
+        } else {
+            var newTransStatus = new TransactionStatus();
+            newTransStatus.status = TransactionStatusEnum.FINISHED;
+            newTransStatus.hasError = true;
+            setTransactionStatus(newTransStatus);
         }
     }
 
@@ -304,7 +309,7 @@ export default function TokenRow({
                                 store.UserBridgeOperation.removeOperationToken(token.symbol, token.chainId);
                             }
                         }}
-                        isDisabled={transactionStatus.status != TransactionStatusEnum.NOT_STARTED}
+                        isDisabled={transactionStatus.status != TransactionStatusEnum.NOT_STARTED || blockRow}
                     />
                 </Td>
                 <Td>
@@ -339,7 +344,8 @@ export default function TokenRow({
                     {selectedToken ? (
                         loadedQuote ? (
                             transactionStatus.status == TransactionStatusEnum.FINISHED ? (
-                                <a href={transactionStatus.transactionUrl}>"Transaction Done"</a>
+                                transactionStatus.hasError?"Error":
+                                <a href={transactionStatus.transactionUrl}>Transaction Done</a>
                             ) : transactionStatus.status == TransactionStatusEnum.IN_PROGRESS ? (
                                 <Spinner />
                             ) : (
